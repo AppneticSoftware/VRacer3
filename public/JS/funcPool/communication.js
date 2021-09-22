@@ -1,20 +1,6 @@
-// import "./socket.io/socket.io.js";
-
-// window.onload = function () {
-//   console.log("Socket");
-//   let socket = io();
-
-//   let contentElement = document.getElementById("content");
-
-//   socket.on("chat message", function (msg) {
-//     contentElement.appendChild(dom("h1", {}, `Connnect`));
-//     alert("message: " + msg);
-//   });
-// };
-
 import { dom, removeChildren } from "./dom.js";
 
-window.onload = function () {
+export function startCommunication() {
   let socket = io();
   let myID = -1;
 
@@ -58,4 +44,4 @@ window.onload = function () {
       contentElement.appendChild(partners[data.myID]);
     }
   });
-};
+}

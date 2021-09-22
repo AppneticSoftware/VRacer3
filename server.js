@@ -1,12 +1,9 @@
-//import "./style.css";
-
-/////////////////////////////////////////////////////////////////////////////80
 // Setup
 const express = require("express");
 const path = require("path");
 const app = require("./app");
 const serverStart = new Date();
-/////////////////////////////////////////////////////////////////////////////80
+
 // Socket.IO connector
 function IoConnect(server) {
   let audienceCounter = 0,
@@ -29,7 +26,7 @@ function IoConnect(server) {
     socket.emit("init", ++uniqueCounter);
   });
 }
-/////////////////////////////////////////////////////////////////////////////80
+
 // Server & WebSockets
 const server = require("http").createServer(app);
 IoConnect(server);
