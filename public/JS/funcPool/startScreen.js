@@ -1,6 +1,6 @@
 import * as THREE from "../../libs/three/three.module.js";
 import { GLTFLoader } from "../../libs/three/jsm/GLTFLoader.js";
-import { OrbitControls } from "../../libs/three/jsm/OrbitControls.js";
+import { CanvasUI } from "../../libs/CanvasUI.js";
 import { LoadingBar } from "../../libs/LoadingBar.js";
 import { VRButton } from "../../libs/three/jsm/VRButton.js";
 
@@ -65,7 +65,7 @@ class StartScreen {
           }
         });
         self.stadium = gltf.scene;
-        self.stadium.position.set(-180, 0, 200);
+        self.stadium.position.set(-181.5, 0, 130);
         self.stadium.scale.set(1, 1, 1);
         self.scene.add(gltf.scene);
 
@@ -92,21 +92,34 @@ class StartScreen {
 
   render() {
     // this.stadium.rotateY(0.01);
+    if (this.renderer.xr.isPresenting == true && this.ui == null) {
+      this.createUIForUserInteraction();
+    }
     this.renderer.render(this.scene, this.camera);
   }
 
-  setupVRButton() {
+  setupVRButton(callback) {
     this.renderer.xr.enabled = true;
-    this.setupCameraPositionInVRMode();
     document.body.appendChild(VRButton.createButton(this.renderer));
+    if (typeof callback == "function") callback();
   }
 
-  setupCameraPositionInVRMode() {
+  setupCameraAndUI() {
     this.dolly = new THREE.Object3D();
-    this.dolly.position.set(1.5, 65, 70);
+    this.dolly.position.set(0, 65, 0);
     this.dolly.rotation.x = -(30 * Math.PI) / 180;
     this.dolly.add(this.camera);
     this.scene.add(this.dolly);
+  }
+
+  createUIForUserInteraction() {
+    this.ui = new CanvasUI();
+    console.log("created");
+    this.ui.updateElement("body", "Hello World");
+    this.ui.update();
+    this.ui.mesh.position.set(0, 65, -2);
+    this.ui.mesh.rotation.x = -(45 * Math.PI) / 180;
+    this.scene.add(this.ui.mesh);
   }
 }
 
