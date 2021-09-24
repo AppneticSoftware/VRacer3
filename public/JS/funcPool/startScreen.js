@@ -3,6 +3,8 @@ import { GLTFLoader } from "../../libs/three/jsm/GLTFLoader.js";
 import { CanvasUI } from "../../libs/CanvasUI.js";
 import { LoadingBar } from "../../libs/LoadingBar.js";
 import { VRButton } from "../../libs/three/jsm/VRButton.js";
+import { XRControllerModelFactory } from "../../libs/three/jsm/XRControllerModelFactory.js";
+import { Game } from "./game.js";
 
 class StartScreen {
   constructor() {
@@ -91,35 +93,124 @@ class StartScreen {
   }
 
   render() {
-    // this.stadium.rotateY(0.01);
-    if (this.renderer.xr.isPresenting == true && this.ui == null) {
-      this.createUIForUserInteraction();
+    if (this.renderer.xr.isPresenting) {
+      if (this.ui == null) {
+        this.createUIForUserInteraction();
+      }
+      this.ui.update();
     }
     this.renderer.render(this.scene, this.camera);
   }
 
-  setupVRButton(callback) {
+  setupVRButton() {
     this.renderer.xr.enabled = true;
     document.body.appendChild(VRButton.createButton(this.renderer));
-    if (typeof callback == "function") callback();
+    this.renderer.setAnimationLoop(this.render.bind(this));
   }
 
   setupCameraAndUI() {
     this.dolly = new THREE.Object3D();
     this.dolly.position.set(0, 65, 0);
     this.dolly.rotation.x = -(30 * Math.PI) / 180;
+    const controllerModelFactory = new XRControllerModelFactory();
+
+    // controller
+    this.controller = this.renderer.xr.getController(0);
+    this.dolly.add(this.controller);
+
+    this.controllerGrip = this.renderer.xr.getControllerGrip(0);
+    this.controllerGrip.add(
+      controllerModelFactory.createControllerModel(this.controllerGrip)
+    );
+    this.dolly.add(this.controllerGrip);
+
+    // controller
+    this.controller1 = this.renderer.xr.getController(1);
+    this.dolly.add(this.controller1);
+
+    this.controllerGrip1 = this.renderer.xr.getControllerGrip(1);
+    this.controllerGrip1.add(
+      controllerModelFactory.createControllerModel(this.controllerGrip1)
+    );
+    this.dolly.add(this.controllerGrip1);
+
+    //
+    const geometry = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(0, 0, 0),
+      new THREE.Vector3(0, 0, -1),
+    ]);
+
+    const line = new THREE.Line(geometry);
+    line.name = "line";
+    line.scale.z = 10;
+
+    this.controller.add(line.clone());
+    this.controller1.add(line.clone());
+
     this.dolly.add(this.camera);
     this.scene.add(this.dolly);
+    this.renderer.setAnimationLoop(this.render.bind(this));
   }
 
   createUIForUserInteraction() {
-    this.ui = new CanvasUI();
-    console.log("created");
+    this.createUI();
     this.ui.updateElement("body", "Hello World");
     this.ui.update();
     this.ui.mesh.position.set(0, 65, -2);
     this.ui.mesh.rotation.x = -(45 * Math.PI) / 180;
     this.scene.add(this.ui.mesh);
+  }
+
+  createUI() {
+    function onJoin() {
+      const game = new Game();
+      console.log("Join Pressed");
+    }
+
+    const config = {
+      header: {
+        type: "text",
+        position: { top: 0 },
+        paddingTop: 30,
+        height: 70,
+        textAlign: "center",
+      },
+      main: {
+        type: "text",
+        position: { top: 70 },
+        height: 372, // default height is 512 so this is 512 - header height:70 - footer height:70
+        backgroundColor: "#bbb",
+        fontColor: "#000",
+      },
+      footer: {
+        type: "text",
+        position: { bottom: 0 },
+        paddingTop: 30,
+        height: 70,
+        fontSize: 19,
+        textAlign: "center",
+      },
+      joinBtn: {
+        type: "button",
+        position: { top: 150, right: 150 },
+        width: 200,
+        height: 52,
+        fontColor: "#fff",
+        backgroundColor: "#1bf",
+        hover: "#3df",
+        onSelect: onJoin,
+      },
+      renderer: this.renderer,
+    };
+    const content = {
+      header: "Welcome to VRacer3",
+      //main: "the following rooms are available:",
+      //@Herr Roessler - bitte im Code lassen, damit die App mehr Downloads erhält :) Herzlichen Dnak
+      //Natürlich sollten die Studis das Spiel erst nach der VL runterladen ...
+      footer: 'Download "Papermade" - for iOS and Android!',
+      joinBtn: "Join",
+    };
+    this.ui = new CanvasUI(content, config);
   }
 }
 
