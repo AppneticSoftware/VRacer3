@@ -2,7 +2,6 @@ import * as THREE from "../../libs/three/three.module.js";
 import { GLTFLoader } from "../../libs/three/jsm/GLTFLoader.js";
 import { OrbitControls } from "../../libs/three/jsm/OrbitControls.js";
 import { LoadingBar } from "../../libs/LoadingBar.js";
-import { VRButton } from "../../libs/three/jsm/VRButton.js";
 
 class Game {
   constructor() {
@@ -47,7 +46,7 @@ class Game {
   }
 
   loadGLTF() {
-    const loader = new GLTFLoader().setPath("../../assets/");
+    const loader = new GLTFLoader().setPath("../../Assets/");
     const self = this;
 
     // Load a glTF resource
@@ -70,8 +69,8 @@ class Game {
             child.material.metalness = 0.2;
           }
         });
-        self.chair = gltf.scene;
-        self.chair.scale.set(5, 5, 5);
+        self.car = gltf.scene;
+        self.car.scale.set(5, 5, 5);
         self.scene.add(gltf.scene);
 
         self.loadingBar.visible = false;
@@ -96,13 +95,8 @@ class Game {
   }
 
   render() {
-    this.chair.rotateY(0.01);
+    this.car.rotateY(0.01);
     this.renderer.render(this.scene, this.camera);
-  }
-
-  setupVRButton() {
-    this.renderer.xr.enabled = true;
-    document.body.appendChild(VRButton.createButton(this.renderer));
   }
 }
 
