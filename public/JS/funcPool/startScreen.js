@@ -4,7 +4,7 @@ import { CanvasUI } from "../../libs/CanvasUI.js";
 import { LoadingBar } from "../../libs/LoadingBar.js";
 import { VRButton } from "../../libs/three/jsm/VRButton.js";
 import { XRControllerModelFactory } from "../../libs/three/jsm/XRControllerModelFactory.js";
-import { Game } from "./game.js";
+import { GameConstructor } from "./gameConstructor.js";
 
 class StartScreen {
   constructor() {
@@ -19,6 +19,7 @@ class StartScreen {
     );
 
     this.camera.position.set(0, 0, 0);
+    this.camera.name = "NeueCam";
 
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0xaaaaaa);
@@ -39,10 +40,13 @@ class StartScreen {
 
     this.loadingBar = new LoadingBar();
 
+    this.loadGLTF("Stadium.glb", [-181.5, 0, 130], [1, 1, 1]);
+
     window.addEventListener("resize", this.resize.bind(this));
   }
 
-  loadGLTF(nameOfFile) {
+  //TODO: REFACTOR (Var Input)
+  loadGLTF(nameOfFile, pos = [3], scale = [3], fileParent) {
     const loader = new GLTFLoader().setPath("../../Assets/");
     const self = this;
 
@@ -52,27 +56,13 @@ class StartScreen {
       nameOfFile,
       // called when the resource is loaded
       function (gltf) {
-        const bbox = new THREE.Box3().setFromObject(gltf.scene);
-        console.log(
-          `min:${bbox.min.x.toFixed(2)},${bbox.min.y.toFixed(
-            2
-          )},${bbox.min.z.toFixed(2)} -  max:${bbox.max.x.toFixed(
-            2
-          )},${bbox.max.y.toFixed(2)},${bbox.max.z.toFixed(2)}`
-        );
+        self.model = gltf.scene;
+        self.model.position.set(pos[0], pos[1], pos[2]);
+        self.model.scale.set(scale[0], scale[1], scale[2]);
 
-        gltf.scene.traverse((child) => {
-          if (child.isMesh) {
-            child.material.metalness = 0.2;
-          }
-        });
-        self.stadium = gltf.scene;
-        self.stadium.position.set(-181.5, 0, 130);
-        self.stadium.scale.set(1, 1, 1);
-        self.scene.add(gltf.scene);
+        self.addObjectToScene(self.model, fileParent);
 
         self.loadingBar.visible = false;
-
         self.renderer.setAnimationLoop(self.render.bind(self));
       },
       // called while loading is progressing
@@ -81,7 +71,7 @@ class StartScreen {
       },
       // called when loading has errors
       function (error) {
-        console.log("An error happened");
+        console.log("LoadGLTF Function: " + error);
       }
     );
   }
@@ -90,6 +80,27 @@ class StartScreen {
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
+  }
+
+  addObjectToScene(newObject, name = "") {
+    newObject.name = name;
+    this.scene.add(newObject);
+  }
+
+  setObjectWithNameInvisible(name) {
+    for (var i = this.scene.children.length - 1; i >= 0; i--) {
+      if (this.scene.children[i].name == name) {
+        this.scene.children[i].visible = false;
+      }
+    }
+  }
+
+  setObjectWithNameVisible(name) {
+    for (var i = this.scene.children.length - 1; i >= 0; i--) {
+      if (this.scene.children[i].name == name) {
+        this.scene.children[i].visible = true;
+      }
+    }
   }
 
   render() {
@@ -108,33 +119,29 @@ class StartScreen {
     this.renderer.setAnimationLoop(this.render.bind(this));
   }
 
+  addCameraToDolly() {
+    this.dolly.add(this.camera);
+    console.log(this.camera.name);
+  }
+
+  removeCameraFromDolly() {
+    this.dolly.remove(this.camera);
+    console.log(this.dolly);
+  }
+
   setupCameraAndUI() {
     this.dolly = new THREE.Object3D();
     this.dolly.position.set(0, 65, 0);
     this.dolly.rotation.x = -(30 * Math.PI) / 180;
+    this.addCameraToDolly();
+    this.setupControllers();
+    this.scene.add(this.dolly);
+    this.renderer.setAnimationLoop(this.render.bind(this));
+  }
+
+  setupControllers() {
     const controllerModelFactory = new XRControllerModelFactory();
 
-    // controller
-    this.controller = this.renderer.xr.getController(0);
-    this.dolly.add(this.controller);
-
-    this.controllerGrip = this.renderer.xr.getControllerGrip(0);
-    this.controllerGrip.add(
-      controllerModelFactory.createControllerModel(this.controllerGrip)
-    );
-    this.dolly.add(this.controllerGrip);
-
-    // controller
-    this.controller1 = this.renderer.xr.getController(1);
-    this.dolly.add(this.controller1);
-
-    this.controllerGrip1 = this.renderer.xr.getControllerGrip(1);
-    this.controllerGrip1.add(
-      controllerModelFactory.createControllerModel(this.controllerGrip1)
-    );
-    this.dolly.add(this.controllerGrip1);
-
-    //
     const geometry = new THREE.BufferGeometry().setFromPoints([
       new THREE.Vector3(0, 0, 0),
       new THREE.Vector3(0, 0, -1),
@@ -144,27 +151,37 @@ class StartScreen {
     line.name = "line";
     line.scale.z = 10;
 
-    this.controller.add(line.clone());
-    this.controller1.add(line.clone());
+    for (let index = 0; index < 2; index++) {
+      // controller
+      controller = this.renderer.xr.getController(index);
+      this.dolly.add(controller);
 
-    this.dolly.add(this.camera);
-    this.scene.add(this.dolly);
-    this.renderer.setAnimationLoop(this.render.bind(this));
+      controllerGrip = this.renderer.xr.getControllerGrip(index);
+      controllerGrip.add(
+        controllerModelFactory.createControllerModel(controllerGrip)
+      );
+
+      controller.add(line.clone());
+      this.dolly.add(controllerGrip);
+    }
   }
 
   createUIForUserInteraction() {
     this.createUI();
-    this.ui.updateElement("body", "Hello World");
     this.ui.update();
     this.ui.mesh.position.set(0, 65, -2);
     this.ui.mesh.rotation.x = -(45 * Math.PI) / 180;
     this.scene.add(this.ui.mesh);
+    // this.addToSceneAndSceneObjects(this.ui.mesh);
   }
 
   createUI() {
+    const self = this;
+
     function onJoin() {
-      const game = new Game();
-      console.log("Join Pressed");
+      self.removeAllSceneObjectsFromScene();
+      // self.removeCameraFromDolly();
+      const game = new GameConstructor(self);
     }
 
     const config = {
@@ -175,13 +192,13 @@ class StartScreen {
         height: 70,
         textAlign: "center",
       },
-      main: {
-        type: "text",
-        position: { top: 70 },
-        height: 372, // default height is 512 so this is 512 - header height:70 - footer height:70
-        backgroundColor: "#bbb",
-        fontColor: "#000",
-      },
+      // main: {
+      //   type: "text",
+      //   position: { top: 70 },
+      //   height: 372, // default height is 512 so this is 512 - header height:70 - footer height:70
+      //   backgroundColor: "#bbb",
+      //   fontColor: "#000",
+      // },
       footer: {
         type: "text",
         position: { bottom: 0 },
@@ -190,7 +207,7 @@ class StartScreen {
         fontSize: 19,
         textAlign: "center",
       },
-      joinBtn: {
+      continue: {
         type: "button",
         position: { top: 150, right: 150 },
         width: 200,
@@ -208,7 +225,7 @@ class StartScreen {
       //@Herr Roessler - bitte im Code lassen, damit die App mehr Downloads erhält :) Herzlichen Dnak
       //Natürlich sollten die Studis das Spiel erst nach der VL runterladen ...
       footer: 'Download "Papermade" - for iOS and Android!',
-      joinBtn: "Join",
+      continue: "Join",
     };
     this.ui = new CanvasUI(content, config);
   }
