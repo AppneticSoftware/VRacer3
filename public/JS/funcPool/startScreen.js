@@ -8,6 +8,8 @@ import { GameConstructor } from "./gameConstructor.js";
 
 class StartScreen {
   constructor() {
+    this.startScreenIdentifier = "startScreen";
+
     const container = document.createElement("div");
     document.body.appendChild(container);
 
@@ -25,11 +27,11 @@ class StartScreen {
     this.scene.background = new THREE.Color(0xaaaaaa);
 
     const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 0.5);
-    this.scene.add(ambient);
+    this.addObjectToScene(ambient, this.startScreenIdentifier);
 
     const light = new THREE.DirectionalLight(0xffffff, 1.5);
     light.position.set(0.2, 1, 1);
-    this.scene.add(light);
+    this.addObjectToScene(light, this.startScreenIdentifier);
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -38,15 +40,24 @@ class StartScreen {
     this.renderer.physicallyCorrectLights = true;
     container.appendChild(this.renderer.domElement);
 
+    this.raycaster = new THREE.Raycaster();
+    this.workingMatrix = new THREE.Matrix4();
+    this.workingVector = new THREE.Vector3();
+
     this.loadingBar = new LoadingBar();
 
-    this.loadGLTF("Stadium.glb", [-181.5, 0, 130], [1, 1, 1]);
+    this.loadGLTF(
+      "Stadium.glb",
+      [-181.5, 0, 130],
+      [1, 1, 1],
+      this.startScreenIdentifier
+    );
 
     window.addEventListener("resize", this.resize.bind(this));
   }
 
   //TODO: REFACTOR (Var Input)
-  loadGLTF(nameOfFile, pos = [3], scale = [3], fileParent) {
+  loadGLTF(nameOfFile, pos = [3], scale = [3], scriptID) {
     const loader = new GLTFLoader().setPath("../../Assets/");
     const self = this;
 
@@ -60,7 +71,7 @@ class StartScreen {
         self.model.position.set(pos[0], pos[1], pos[2]);
         self.model.scale.set(scale[0], scale[1], scale[2]);
 
-        self.addObjectToScene(self.model, fileParent);
+        self.addObjectToScene(self.model, scriptID);
 
         self.loadingBar.visible = false;
         self.renderer.setAnimationLoop(self.render.bind(self));
@@ -87,7 +98,7 @@ class StartScreen {
     this.scene.add(newObject);
   }
 
-  setObjectWithNameInvisible(name) {
+  setObjectWithName_Invisible(name) {
     for (var i = this.scene.children.length - 1; i >= 0; i--) {
       if (this.scene.children[i].name == name) {
         this.scene.children[i].visible = false;
@@ -95,7 +106,7 @@ class StartScreen {
     }
   }
 
-  setObjectWithNameVisible(name) {
+  setObjectWithName_Visible(name) {
     for (var i = this.scene.children.length - 1; i >= 0; i--) {
       if (this.scene.children[i].name == name) {
         this.scene.children[i].visible = true;
@@ -109,6 +120,13 @@ class StartScreen {
         this.createUIForUserInteraction();
       }
       this.ui.update();
+
+      if (this.controllers) {
+        const self = this;
+        this.controllers.forEach((controller) => {
+          self.handleController(controller);
+        });
+      }
     }
     this.renderer.render(this.scene, this.camera);
   }
@@ -119,27 +137,25 @@ class StartScreen {
     this.renderer.setAnimationLoop(this.render.bind(this));
   }
 
-  addCameraToDolly() {
-    this.dolly.add(this.camera);
-    console.log(this.camera.name);
-  }
-
-  removeCameraFromDolly() {
-    this.dolly.remove(this.camera);
-    console.log(this.dolly);
-  }
-
   setupCameraAndUI() {
     this.dolly = new THREE.Object3D();
     this.dolly.position.set(0, 65, 0);
     this.dolly.rotation.x = -(30 * Math.PI) / 180;
     this.addCameraToDolly();
-    this.setupControllers();
-    this.scene.add(this.dolly);
+    this.controllers = this.setupControllers();
+    this.addObjectToScene(this.dolly, this.startScreenIdentifier);
     this.renderer.setAnimationLoop(this.render.bind(this));
+  }
+  addCameraToDolly() {
+    this.dolly.add(this.camera);
+  }
+
+  removeCameraFromDolly() {
+    this.dolly.remove(this.camera);
   }
 
   setupControllers() {
+    const controllers = [];
     const controllerModelFactory = new XRControllerModelFactory();
 
     const geometry = new THREE.BufferGeometry().setFromPoints([
@@ -148,21 +164,36 @@ class StartScreen {
     ]);
 
     const line = new THREE.Line(geometry);
-    line.name = "line";
-    line.scale.z = 10;
+    line.scale.z = 2;
 
     for (let index = 0; index < 2; index++) {
       // controller
-      controller = this.renderer.xr.getController(index);
+      const controller = this.renderer.xr.getController(index);
       this.dolly.add(controller);
 
-      controllerGrip = this.renderer.xr.getControllerGrip(index);
+      const controllerGrip = this.renderer.xr.getControllerGrip(index);
       controllerGrip.add(
         controllerModelFactory.createControllerModel(controllerGrip)
       );
-
+      controllers.push(controller);
       controller.add(line.clone());
       this.dolly.add(controllerGrip);
+    }
+    return controllers;
+  }
+
+  handleController(controller) {
+    controller.children[0].scale.z = 10;
+
+    this.workingMatrix.identity().extractRotation(controller.matrixWorld);
+
+    this.raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
+    this.raycaster.ray.direction.set(0, 0, -1).applyMatrix4(this.workingMatrix);
+
+    const intersects = this.raycaster.intersectObjects(this.scene.children);
+
+    if (intersects.length > 0) {
+      controller.children[0].scale.z = intersects[0].distance;
     }
   }
 
@@ -171,16 +202,15 @@ class StartScreen {
     this.ui.update();
     this.ui.mesh.position.set(0, 65, -2);
     this.ui.mesh.rotation.x = -(45 * Math.PI) / 180;
-    this.scene.add(this.ui.mesh);
-    // this.addToSceneAndSceneObjects(this.ui.mesh);
+    this.addObjectToScene(this.ui.mesh, this.startScreenIdentifier);
   }
 
   createUI() {
     const self = this;
 
     function onJoin() {
-      self.removeAllSceneObjectsFromScene();
-      // self.removeCameraFromDolly();
+      self.setObjectWithName_Invisible(self.startScreenIdentifier);
+      self.removeCameraFromDolly();
       const game = new GameConstructor(self);
     }
 
