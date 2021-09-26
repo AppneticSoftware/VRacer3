@@ -5,6 +5,7 @@ import { LoadingBar } from "../../libs/LoadingBar.js";
 import { VRButton } from "../../libs/three/jsm/VRButton.js";
 import { XRControllerModelFactory } from "../../libs/three/jsm/XRControllerModelFactory.js";
 import { GameConstructor } from "./gameConstructor.js";
+import { OrbitControls } from "../../libs/three/jsm/OrbitControls.js";
 
 class StartScreen {
   constructor() {
@@ -54,6 +55,12 @@ class StartScreen {
     );
 
     window.addEventListener("resize", this.resize.bind(this));
+  }
+
+  testOrbisControlls() {
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls.target.set(0, 0, -5);
+    this.controls.update();
   }
 
   //TODO: REFACTOR (Var Input)
@@ -164,7 +171,7 @@ class StartScreen {
     ]);
 
     const line = new THREE.Line(geometry);
-    line.scale.z = 2;
+    line.scale.z = 100;
 
     for (let index = 0; index < 2; index++) {
       // controller
@@ -183,7 +190,7 @@ class StartScreen {
   }
 
   handleController(controller) {
-    controller.children[0].scale.z = 10;
+    controller.children[0].scale.z = 100;
 
     this.workingMatrix.identity().extractRotation(controller.matrixWorld);
 

@@ -28,6 +28,7 @@ class GameConstructor {
     const light = new THREE.DirectionalLight(0xffffff, 1.5);
     light.position.set(0.2, 1, 1);
     startScreen.addObjectToScene(light, this.gameConstructorIdentifier);
+    startScreen.testOrbisControlls();
   }
 }
 
