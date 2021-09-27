@@ -33,6 +33,7 @@ function IoConnect(server) {
     //Listener
     listenToDisconnect(socket);
     listenToUserIdSendBack(socket);
+    listenToJoinRoom(socket);
   });
 }
 //Socket Functions - Sender
@@ -40,6 +41,11 @@ function IoConnect(server) {
 function sendRoomAvailability(socket) {
   // let roomsMemberCounterArray =
   socket.emit("roomAvailability", getRoomCounters());
+}
+
+function sendRoomConformation(socket, roomName) {
+  // let roomsMemberCounterArray =
+  socket.emit("roomConfirmed", roomName);
 }
 
 //Socket Functions - Listener
@@ -53,6 +59,13 @@ function listenToDisconnect(socket) {
 function listenToUserIdSendBack(socket) {
   socket.on("userID", function (userID) {
     console.log("user gave back id:" + userID);
+  });
+}
+
+function listenToJoinRoom(socket) {
+  socket.on("joinRoom", function (roomName) {
+    console.log("JoiningRoom: " + roomName);
+    sendRoomConformation(socket, roomName);
   });
 }
 

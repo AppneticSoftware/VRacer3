@@ -6,7 +6,7 @@ import { VRButton } from "../../libs/three/jsm/VRButton.js";
 import { XRControllerModelFactory } from "../../libs/three/jsm/XRControllerModelFactory.js";
 import { GameConstructor } from "./gameConstructor.js";
 import { OrbitControls } from "../../libs/three/jsm/OrbitControls.js";
-import { startCommunication } from "./communication.js";
+import { Communication } from "./communication.js";
 
 class StartScreen {
   constructor() {
@@ -55,9 +55,17 @@ class StartScreen {
       this.startScreenIdentifier
     );
 
-    this.communication = startCommunication(this);
+    this.setupVRButton();
+    this.setupCameraAndUI();
+
+    // this.communication.emitSomething("Hello From StartScreen 2");
 
     window.addEventListener("resize", this.resize.bind(this));
+  }
+
+  startSocketCommunication() {
+    this.communication = new Communication(this);
+    this.communication.startCommunication();
   }
 
   testOrbisControlls() {
@@ -128,6 +136,7 @@ class StartScreen {
     if (this.renderer.xr.isPresenting) {
       if (this.ui == null) {
         this.createUIForUserInteraction();
+        this.startSocketCommunication();
       }
       this.ui.update();
 
@@ -138,7 +147,7 @@ class StartScreen {
         });
       }
     }
-    // console.log(this.communication);
+    // console.log(this.communication.roomsMemberCounterArray);
     this.renderer.render(this.scene, this.camera);
   }
 
@@ -213,14 +222,18 @@ class StartScreen {
     this.ui.update();
     this.ui.mesh.position.set(0, 65, -2);
     this.ui.mesh.rotation.x = -(45 * Math.PI) / 180;
-    this.addObjectToScene(this.ui.mesh, this.startScreenIdentifier);
+    // this.addObjectToScene(this.ui.mesh, this.startScreenIdentifier);
+    this.addObjectToScene(this.ui.mesh, "UI FROM START");
+    console.log(this);
   }
 
   joinGame(roomName) {
     this.setObjectWithName_Invisible(this.startScreenIdentifier);
     this.removeCameraFromDolly();
     //func to join room of name "roomName"
+
     const game = new GameConstructor(this);
+    this.communication.joinRoom(roomName);
   }
 
   createUI() {
@@ -333,7 +346,7 @@ class StartScreen {
       //@Herr Roessler - bitte im Code lassen, damit die App mehr Downloads erhält :) Herzlichen Dnak
       //Natürlich sollten die Studis das Spiel erst nach der VL runterladen ...
       footer: 'Download "Papermade" - for iOS and Android!',
-      roomOne: "Room 1 (3/4)",
+      roomOne: "Room 1 (0/4)",
       joinBtnOne: "Join",
       roomTwo: "Room 2 (0/4)",
       joinBtnTwo: "Join",
@@ -341,6 +354,15 @@ class StartScreen {
       joinBtnThree: "Join",
     };
     this.ui = new CanvasUI(content, config);
+  }
+
+  updateRoomNumbers(roomNumbers) {
+    const self = this;
+    console.log(self);
+    self.ui.updateElement("roomOne", "Room 1 (" + roomNumbers[0] + "/4)");
+    self.ui.updateElement("roomTwo", "Room 2 (" + roomNumbers[1] + "/4)");
+    self.ui.updateElement("roomThree", "Room 3 (" + roomNumbers[2] + "/4)");
+    self.ui.update();
   }
 }
 

@@ -6,9 +6,10 @@ import { StartScreen } from "./funcPool/startScreen.js";
 
 window.onload = function () {
   const startScreen = new StartScreen();
-  startScreen.setupVRButton();
-  startScreen.setupCameraAndUI();
+  // startScreen.setupVRButton();
+  // startScreen.setupCameraAndUI();
   // startScreen.loadGLTF("Stadium.glb");
+  // startScreen.startSocketCommunication();
   window.app = startScreen;
   // startCommunication();
 };
