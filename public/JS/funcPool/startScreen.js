@@ -6,6 +6,7 @@ import { VRButton } from "../../libs/three/jsm/VRButton.js";
 import { XRControllerModelFactory } from "../../libs/three/jsm/XRControllerModelFactory.js";
 import { GameConstructor } from "./gameConstructor.js";
 import { OrbitControls } from "../../libs/three/jsm/OrbitControls.js";
+import { startCommunication } from "./communication.js";
 
 class StartScreen {
   constructor() {
@@ -53,6 +54,8 @@ class StartScreen {
       [1, 1, 1],
       this.startScreenIdentifier
     );
+
+    startCommunication();
 
     window.addEventListener("resize", this.resize.bind(this));
   }

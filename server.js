@@ -6,24 +6,19 @@ const serverStart = new Date();
 
 // Socket.IO connector
 function IoConnect(server) {
-  let audienceCounter = 0,
-    uniqueCounter = 0;
+  let activeUsers = 0;
   let socketIO = require("socket.io")(server);
   socketIO.on("connection", (socket) => {
     console.log("user connected");
-    ++audienceCounter;
+    console.log("UserID = " + (1 + activeUsers));
+    socket.emit("init", ++activeUsers);
     socket.on("disconnect", function () {
-      --audienceCounter;
+      activeUsers -= 1;
       console.log("user disconnected");
     });
-    socket.on("heartbeat", function (data) {
-      const now = new Date();
-      --audienceCounter;
-      data.audienceCounter = audienceCounter;
-      data.serverRuntime = Math.floor((now - serverStart) / 1000);
-      socketIO.sockets.emit("heartbeat", data);
+    socket.on("userID", function (userID) {
+      console.log("user gave back id:" + userID);
     });
-    socket.emit("init", ++uniqueCounter);
   });
 }
 
