@@ -3,7 +3,6 @@
 
 // import { Game } from "./funcPool/gameConstructor.js";
 import { StartScreen } from "./funcPool/startScreen.js";
-import { startCommunication } from "./funcPool/communication.js";
 
 window.onload = function () {
   const startScreen = new StartScreen();

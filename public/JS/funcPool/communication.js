@@ -1,14 +1,13 @@
-export function startCommunication() {
+export function startCommunication(startScreen) {
   let socket = io();
-  let myID = -1;
+  let roomsMemberCounterArray;
 
   socket.on("connect", function () {
     console.log("App connect");
+    console.log(socket.id);
   });
 
-  socket.on("init", function (id) {
-    console.log("Recieved Message from Server. userID = " + id);
-    myID = id;
-    socket.emit("userID", myID);
+  socket.on("roomAvailability", function (roomUserCounter) {
+    startScreen.roomsMemberCounterArray = roomUserCounter;
   });
 }

@@ -55,7 +55,7 @@ class StartScreen {
       this.startScreenIdentifier
     );
 
-    startCommunication();
+    this.communication = startCommunication(this);
 
     window.addEventListener("resize", this.resize.bind(this));
   }
@@ -138,6 +138,7 @@ class StartScreen {
         });
       }
     }
+    // console.log(this.communication);
     this.renderer.render(this.scene, this.camera);
   }
 

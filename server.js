@@ -2,25 +2,12 @@
 const express = require("express");
 const path = require("path");
 const app = require("./app");
-const serverStart = new Date();
-
-// Socket.IO connector
-function IoConnect(server) {
-  let activeUsers = 0;
-  let socketIO = require("socket.io")(server);
-  socketIO.on("connection", (socket) => {
-    console.log("user connected");
-    console.log("UserID = " + (1 + activeUsers));
-    socket.emit("init", ++activeUsers);
-    socket.on("disconnect", function () {
-      activeUsers -= 1;
-      console.log("user disconnected");
-    });
-    socket.on("userID", function (userID) {
-      console.log("user gave back id:" + userID);
-    });
-  });
-}
+let userIDs = [];
+let roomUserCounter = [
+  ["0", "0", "0", "0"], //RoomOne
+  ["0", "0", "0", "0"], //RoomTwo
+  ["0", "0", "0", "0"], //RoomThree
+];
 
 // Server & WebSockets
 const server = require("http").createServer(app);
@@ -35,3 +22,57 @@ server.listen(port, function () {
     `App prod ${process.env.PROD} listening at ${port} in ${dataDir}`
   );
 });
+
+//----------------------------------------------------------------------
+// Socket.IO connector
+function IoConnect(server) {
+  let socketIO = require("socket.io")(server);
+  socketIO.on("connection", (socket) => {
+    sendRoomAvailability(socket);
+
+    //Listener
+    listenToDisconnect(socket);
+    listenToUserIdSendBack(socket);
+  });
+}
+//Socket Functions - Sender
+
+function sendRoomAvailability(socket) {
+  // let roomsMemberCounterArray =
+  socket.emit("roomAvailability", getRoomCounters());
+}
+
+//Socket Functions - Listener
+
+function listenToDisconnect(socket) {
+  socket.on("disconnect", function () {
+    console.log("user disconnected " + socket.id);
+  });
+}
+
+function listenToUserIdSendBack(socket) {
+  socket.on("userID", function (userID) {
+    console.log("user gave back id:" + userID);
+  });
+}
+
+//Generall Functions
+
+function getRoomCounters() {
+  const roomsMemberCounterArray = [];
+  for (let index = 0; index < roomUserCounter.length; index++) {
+    roomsMemberCounterArray[index] = countMembersInRoom(roomUserCounter[index]);
+  }
+
+  return roomsMemberCounterArray;
+}
+
+function countMembersInRoom(roomArray) {
+  const memberAmount = 0;
+  for (let index = 0; index < roomArray.length; index++) {
+    if (roomArray[index] != "0") {
+      memberAmount += 1;
+    }
+  }
+  return memberAmount;
+}
