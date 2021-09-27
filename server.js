@@ -57,7 +57,8 @@ function sendRoomsUpdateToAllUsers(socket) {
 function listenToDisconnect(socket) {
   socket.on("disconnect", function () {
     console.log(socket.id + " disconnected. ");
-    //SOCKET ID AUS ROOMS RAUSWERFEN
+    removeUserFromRoom(socket.id);
+    sendRoomsUpdateToAllUsers(socket);
   });
 }
 
@@ -114,4 +115,14 @@ function isUserAddabletoSpecificRoom(userID, roomArray) {
     }
   }
   return userWasAddable;
+}
+
+function removeUserFromRoom(userId) {
+  for (let index = 0; index < roomUserCounter.length; index++) {
+    for (let index2 = 0; index2 < roomUserCounter[index].length; index2++) {
+      if (roomUserCounter[index][index2] == userId) {
+        roomUserCounter[index][index2] = "0";
+      }
+    }
+  }
 }

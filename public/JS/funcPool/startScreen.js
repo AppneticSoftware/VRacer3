@@ -239,15 +239,10 @@ class StartScreen {
     this.communication.joinRoom(roomName);
   }
 
-  returnUserNumbInRoom(roomName) {
-    switch (roomName) {
-      case "roomOne":
-        return;
-        break;
-
-      default:
-        break;
-    }
+  showErrorMsg(msg) {
+    console.log("Error: " + msg);
+    this.ui.updateElement("errorMsg", msg);
+    this.ui.update();
   }
 
   createUI() {
@@ -286,6 +281,15 @@ class StartScreen {
         paddingTop: 30,
         height: 70,
         fontSize: 19,
+        textAlign: "center",
+      },
+      errorMsg: {
+        type: "text",
+        position: { bottom: 70 },
+        paddingTop: 30,
+        height: 70,
+        fontSize: 19,
+        fontColor: "#FF0000",
         textAlign: "center",
       },
       roomOne: {
@@ -366,6 +370,7 @@ class StartScreen {
       joinBtnTwo: "Join",
       roomThree: "Room 3 (0/4)",
       joinBtnThree: "Join",
+      errorMsg: "",
     };
     this.ui = new CanvasUI(content, config);
   }

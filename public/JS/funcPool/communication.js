@@ -22,7 +22,9 @@ class Communication {
         self.startScreen.joinGame();
       } else {
         console.log("Joining is not allowed");
-        alert("You are not allowed to join this room. Please try another one.");
+        self.startScreen.showErrorMsg(
+          "You are not allowed to join this room. Please try another one."
+        );
       }
     });
   }
