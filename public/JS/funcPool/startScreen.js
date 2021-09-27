@@ -273,6 +273,7 @@ class StartScreen {
         position: { top: 70 },
         height: 40,
         padding: 15,
+        textAlign: "center",
         fontSize: 20,
       },
       footer: {
