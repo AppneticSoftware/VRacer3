@@ -212,13 +212,26 @@ class StartScreen {
     this.addObjectToScene(this.ui.mesh, this.startScreenIdentifier);
   }
 
+  joinGame(roomName) {
+    this.setObjectWithName_Invisible(this.startScreenIdentifier);
+    this.removeCameraFromDolly();
+    //func to join room of name "roomName"
+    const game = new GameConstructor(this);
+  }
+
   createUI() {
     const self = this;
 
-    function onJoin() {
-      self.setObjectWithName_Invisible(self.startScreenIdentifier);
-      self.removeCameraFromDolly();
-      const game = new GameConstructor(self);
+    function onJoinRoomOne() {
+      self.joinGame("roomOne");
+    }
+
+    function onJoinRoomTwo() {
+      self.joinGame("roomTwo");
+    }
+
+    function onJoinRoomThree() {
+      self.joinGame("roomThree");
     }
 
     const config = {
@@ -229,13 +242,13 @@ class StartScreen {
         height: 70,
         textAlign: "center",
       },
-      // main: {
-      //   type: "text",
-      //   position: { top: 70 },
-      //   height: 372, // default height is 512 so this is 512 - header height:70 - footer height:70
-      //   backgroundColor: "#bbb",
-      //   fontColor: "#000",
-      // },
+      subheader: {
+        type: "text",
+        position: { top: 70 },
+        height: 40,
+        padding: 15,
+        fontSize: 20,
+      },
       footer: {
         type: "text",
         position: { bottom: 0 },
@@ -244,25 +257,84 @@ class StartScreen {
         fontSize: 19,
         textAlign: "center",
       },
-      continue: {
+      roomOne: {
+        type: "text",
+        position: { top: 140, left: 20 },
+        height: 40,
+        padding: 18,
+        fontSize: 20,
+        width: 250,
+        textAlign: "right",
+      },
+      joinBtnOne: {
         type: "button",
-        position: { top: 150, right: 150 },
-        width: 200,
-        height: 52,
+        position: { top: 150, right: 100 },
+        width: 100,
+        height: 25,
+        fontSize: 20,
+        padding: 10,
         fontColor: "#fff",
         backgroundColor: "#1bf",
         hover: "#3df",
-        onSelect: onJoin,
+        onSelect: onJoinRoomOne,
+      },
+      roomTwo: {
+        type: "text",
+        position: { top: 190, left: 20 },
+        height: 40,
+        padding: 18,
+        fontSize: 20,
+        width: 250,
+        textAlign: "right",
+      },
+      joinBtnTwo: {
+        type: "button",
+        position: { top: 200, right: 100 },
+        width: 100,
+        height: 25,
+        fontSize: 20,
+        padding: 10,
+        fontColor: "#fff",
+        backgroundColor: "#1bf",
+        hover: "#3df",
+        onSelect: onJoinRoomTwo,
+      },
+      roomThree: {
+        type: "text",
+        position: { top: 240, left: 20 },
+        height: 40,
+        padding: 18,
+        fontSize: 20,
+        width: 250,
+        textAlign: "right",
+      },
+      joinBtnThree: {
+        type: "button",
+        position: { top: 250, right: 100 },
+        width: 100,
+        height: 25,
+        fontSize: 20,
+        padding: 10,
+        fontColor: "#fff",
+        backgroundColor: "#1bf",
+        hover: "#3df",
+        onSelect: onJoinRoomThree,
       },
       renderer: this.renderer,
     };
     const content = {
       header: "Welcome to VRacer3",
+      subheader: "join one of the following rooms:",
       //main: "the following rooms are available:",
       //@Herr Roessler - bitte im Code lassen, damit die App mehr Downloads erhält :) Herzlichen Dnak
       //Natürlich sollten die Studis das Spiel erst nach der VL runterladen ...
       footer: 'Download "Papermade" - for iOS and Android!',
-      continue: "Join",
+      roomOne: "Room 1 (3/4)",
+      joinBtnOne: "Join",
+      roomTwo: "Room 2 (0/4)",
+      joinBtnTwo: "Join",
+      roomThree: "Room 3 (0/4)",
+      joinBtnThree: "Join",
     };
     this.ui = new CanvasUI(content, config);
   }
