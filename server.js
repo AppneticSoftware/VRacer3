@@ -57,6 +57,7 @@ function sendRoomsUpdateToAllUsers(socket) {
 function listenToDisconnect(socket) {
   socket.on("disconnect", function () {
     console.log(socket.id + " disconnected. ");
+    //SOCKET ID AUS ROOMS RAUSWERFEN
   });
 }
 

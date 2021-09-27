@@ -19,8 +19,10 @@ class Communication {
     this.socket.on("roomPermission", function (isAllowed) {
       if (isAllowed == true) {
         console.log("Joining is allowed");
+        self.startScreen.joinGame();
       } else {
         console.log("Joining is not allowed");
+        alert("You are not allowed to join this room. Please try another one.");
       }
     });
   }
@@ -28,6 +30,7 @@ class Communication {
   joinRoom(roomName) {
     const self = this;
     this.socket.emit("joinRoom", roomName);
+
     //NACHFRAGEN: Warum wird dieses Console Log nicht geprintet?
     // console.log("HALLO FROM EMITSOMETHING");
   }

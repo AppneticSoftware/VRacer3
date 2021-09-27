@@ -227,28 +227,42 @@ class StartScreen {
     console.log(this);
   }
 
-  joinGame(roomName) {
+  joinGame() {
     this.setObjectWithName_Invisible(this.startScreenIdentifier);
     this.removeCameraFromDolly();
-    //func to join room of name "roomName"
-
     const game = new GameConstructor(this);
+  }
+
+  //TODO: REFACTOR - NOTWENDIG?
+  askToJoinGame(roomName) {
+    //func to join room of name "roomName"
     this.communication.joinRoom(roomName);
+  }
+
+  returnUserNumbInRoom(roomName) {
+    switch (roomName) {
+      case "roomOne":
+        return;
+        break;
+
+      default:
+        break;
+    }
   }
 
   createUI() {
     const self = this;
 
     function onJoinRoomOne() {
-      self.joinGame("roomOne");
+      self.askToJoinGame("roomOne");
     }
 
     function onJoinRoomTwo() {
-      self.joinGame("roomTwo");
+      self.askToJoinGame("roomTwo");
     }
 
     function onJoinRoomThree() {
-      self.joinGame("roomThree");
+      self.askToJoinGame("roomThree");
     }
 
     const config = {
