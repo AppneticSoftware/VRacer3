@@ -28,11 +28,11 @@ server.listen(port, function () {
 function IoConnect(server) {
   let socketIO = require("socket.io")(server);
   socketIO.on("connection", (socket) => {
+    console.log(socket.id + " joined the server.");
     sendRoomAvailability(socket);
 
     //Listener
     listenToDisconnect(socket);
-    listenToUserIdSendBack(socket);
     listenToJoinRoom(socket);
   });
 }
@@ -43,29 +43,29 @@ function sendRoomAvailability(socket) {
   socket.emit("roomAvailability", getRoomCounters());
 }
 
-function sendRoomConformation(socket, roomName) {
+function sendRoomPermission(socket, isAllowed) {
   // let roomsMemberCounterArray =
-  socket.emit("roomConfirmed", roomName);
+  socket.emit("roomPermission", isAllowed);
+}
+
+function sendRoomsUpdateToAllUsers(socket) {
+  socket.broadcast.emit("roomAvailability", getRoomCounters());
 }
 
 //Socket Functions - Listener
 
 function listenToDisconnect(socket) {
   socket.on("disconnect", function () {
-    console.log("user disconnected " + socket.id);
-  });
-}
-
-function listenToUserIdSendBack(socket) {
-  socket.on("userID", function (userID) {
-    console.log("user gave back id:" + userID);
+    console.log(socket.id + " disconnected. ");
   });
 }
 
 function listenToJoinRoom(socket) {
   socket.on("joinRoom", function (roomName) {
-    console.log("JoiningRoom: " + roomName);
-    sendRoomConformation(socket, roomName);
+    console.log(socket.id + " is asking to Join Room: " + roomName);
+    const isUserAllowedToJoin = isUserAddableToRoom(socket.id, roomName);
+    sendRoomPermission(socket, isUserAllowedToJoin);
+    sendRoomsUpdateToAllUsers(socket);
   });
 }
 
@@ -81,11 +81,36 @@ function getRoomCounters() {
 }
 
 function countMembersInRoom(roomArray) {
-  const memberAmount = 0;
+  let memberAmount = 0;
   for (let index = 0; index < roomArray.length; index++) {
     if (roomArray[index] != "0") {
       memberAmount += 1;
     }
   }
   return memberAmount;
+}
+
+function isUserAddableToRoom(userId, roomName) {
+  switch (roomName) {
+    case "roomOne":
+      return isUserAddabletoSpecificRoom(userId, roomUserCounter[0]);
+    case "roomTwo":
+      return isUserAddabletoSpecificRoom(userId, roomUserCounter[1]);
+    case "roomThree":
+      return isUserAddabletoSpecificRoom(userId, roomUserCounter[2]);
+    default:
+      return false;
+  }
+}
+
+function isUserAddabletoSpecificRoom(userID, roomArray) {
+  let userWasAddable = false;
+  for (let index = 0; index < roomArray.length; index++) {
+    if (roomArray[index] == "0") {
+      roomArray[index] = userID;
+      userWasAddable = true;
+      break;
+    }
+  }
+  return userWasAddable;
 }

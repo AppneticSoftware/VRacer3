@@ -16,8 +16,12 @@ class Communication {
       self.startScreen.updateRoomNumbers(roomUserCounter);
     });
 
-    this.socket.on("roomConfirmed", function (roomName) {
-      console.log("Room Confirmed from Server: " + roomName);
+    this.socket.on("roomPermission", function (isAllowed) {
+      if (isAllowed == true) {
+        console.log("Joining is allowed");
+      } else {
+        console.log("Joining is not allowed");
+      }
     });
   }
 
