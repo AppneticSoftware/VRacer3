@@ -26,13 +26,13 @@ class StartScreen {
     this.camera.name = "NeueCam";
 
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0xaaaaaa);
+    this.scene.background = new THREE.Color(0xc9e9f6);
 
-    const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 0.5);
+    const ambient = new THREE.HemisphereLight(0xc9e9f6, 0xbbbbff, 0.5);
     this.addObjectToScene(ambient, this.startScreenIdentifier);
 
     const light = new THREE.DirectionalLight(0xffffff, 1.5);
-    light.position.set(0.2, 1, 1);
+    light.position.set(0, 100, 50);
     this.addObjectToScene(light, this.startScreenIdentifier);
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -75,10 +75,16 @@ class StartScreen {
   }
 
   //TODO: REFACTOR (Var Input)
-  loadGLTF(nameOfFile, pos = [3], scale = [3], scriptID) {
+  loadGLTF(
+    nameOfFile,
+    pos = [3],
+    scale = [3],
+    scriptID
+    // loadingNotVisible = true
+  ) {
     const loader = new GLTFLoader().setPath("../../Assets/");
     const self = this;
-
+    this.loadingBar.visible = true;
     // Load a glTF resource
     loader.load(
       // resource URL
@@ -91,11 +97,16 @@ class StartScreen {
 
         self.addObjectToScene(self.model, scriptID);
 
+        // if (loadingNotVisible == true) {
+        //   self.loadingBar.visible = false;
+        // }
         self.loadingBar.visible = false;
+
         self.renderer.setAnimationLoop(self.render.bind(self));
       },
       // called while loading is progressing
       function (xhr) {
+        console.log(xhr.loaded / xhr.total);
         self.loadingBar.progress = xhr.loaded / xhr.total;
       },
       // called when loading has errors
@@ -157,6 +168,10 @@ class StartScreen {
     this.renderer.setAnimationLoop(this.render.bind(this));
   }
 
+  renderFunc() {
+    this.renderer.setAnimationLoop(this.render.bind(this));
+  }
+
   setupCameraAndUI() {
     this.dolly = new THREE.Object3D();
     this.dolly.position.set(0, 65, 0);
@@ -166,6 +181,7 @@ class StartScreen {
     this.addObjectToScene(this.dolly, this.startScreenIdentifier);
     this.renderer.setAnimationLoop(this.render.bind(this));
   }
+
   addCameraToDolly() {
     this.dolly.add(this.camera);
   }
@@ -223,7 +239,7 @@ class StartScreen {
     this.ui.mesh.position.set(0, 65, -2);
     this.ui.mesh.rotation.x = -(45 * Math.PI) / 180;
     // this.addObjectToScene(this.ui.mesh, this.startScreenIdentifier);
-    this.addObjectToScene(this.ui.mesh, "UI FROM START");
+    this.addObjectToScene(this.ui.mesh, this.startScreenIdentifier);
     console.log(this);
   }
 
