@@ -19,22 +19,46 @@ class Communication {
     this.socket.on("roomPermission", function (isAllowed) {
       if (isAllowed == true) {
         console.log("Joining is allowed");
-        self.startScreen.joinGame();
+        self.startScreen.joinGame(function callFunction() {
+          self.userSuccessfullyJoined(true);
+        });
       } else {
         console.log("Joining is not allowed");
         self.startScreen.showErrorMsg(
           "You are not allowed to join this room. Please try another one."
         );
+        self.userSuccessfullyJoined(false);
       }
+    });
+
+    this.socket.on("roomUserData", function (roomUserData) {
+      console.log(roomUserData);
+      self.startScreen.gameConstructor.initPlayers(
+        roomUserData,
+        self.socket.id
+      );
+    });
+
+    this.socket.on("userDisconnect", function (userID) {
+      console.log(userID + " left the game.");
+      self.startScreen.gameConstructor.removePlayerFromRacer(userID);
+    });
+
+    this.socket.on("newPlayerJoined", function (userID) {
+      self.startScreen.gameConstructor.addNewPlayerToScene(userID);
     });
   }
 
   joinRoom(roomName) {
-    const self = this;
+    this.roomName = roomName;
     this.socket.emit("joinRoom", roomName);
 
     //NACHFRAGEN: Warum wird dieses Console Log nicht geprintet?
     // console.log("HALLO FROM EMITSOMETHING");
+  }
+
+  userSuccessfullyJoined(isJoinedRoom) {
+    this.socket.emit("joinConfirmation", isJoinedRoom, this.roomName);
   }
 }
 

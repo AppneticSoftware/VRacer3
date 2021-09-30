@@ -34,8 +34,10 @@ function IoConnect(server) {
     //Listener
     listenToDisconnect(socket);
     listenToJoinRoom(socket);
+    listenToSuccessfullyJoinedRoom(socket);
   });
 }
+//-----------------------------------------------------------------------
 //Socket Functions - Sender
 
 function sendRoomAvailability(socket) {
@@ -52,12 +54,28 @@ function sendRoomsUpdateToAllUsers(socket) {
   socket.broadcast.emit("roomAvailability", getRoomCounters());
 }
 
+function sendUserDataFromRoom(socket, roomName) {
+  socket.emit("roomUserData", getUserDataFromSpecificRoom(roomName));
+}
+
+function sendNewPlayerJoined(socket, roomName) {
+  socket.to(roomName).emit("newPlayerJoined", socket.id);
+}
+
+//TODO: EXIT BUTTON FUNCTION - verlässt eigentlich ganzen Server
+function sendRoomUserDisconnect(socket, roomName) {
+  console.log(socket.id + " disconnected from room " + roomName);
+  socket.to(roomName).emit("userDisconnect", socket.id);
+}
+
+//-----------------------------------------------------------------------
 //Socket Functions - Listener
 
 function listenToDisconnect(socket) {
   socket.on("disconnect", function () {
     console.log(socket.id + " disconnected. ");
-    removeUserFromRoom(socket.id);
+    const roomName = removeUserFromRoomAndReturnRoomName(socket.id);
+    sendRoomUserDisconnect(socket, roomName);
     sendRoomsUpdateToAllUsers(socket);
   });
 }
@@ -67,11 +85,39 @@ function listenToJoinRoom(socket) {
     console.log(socket.id + " is asking to Join Room: " + roomName);
     const isUserAllowedToJoin = isUserAddableToRoom(socket.id, roomName);
     sendRoomPermission(socket, isUserAllowedToJoin);
-    sendRoomsUpdateToAllUsers(socket);
   });
 }
 
+function listenToSuccessfullyJoinedRoom(socket) {
+  socket.on("joinConfirmation", function (isUserSuccessfullyJoined, roomName) {
+    if (isUserSuccessfullyJoined) {
+      //getRoomname
+      console.log(socket.id + " successfully joined Room: " + roomName);
+      socket.join(roomName);
+      sendRoomsUpdateToAllUsers(socket);
+      sendUserDataFromRoom(socket, roomName);
+      sendNewPlayerJoined(socket, roomName);
+    } else console.log(socket.id + " didnt joined the room.");
+  });
+}
+
+//-----------------------------------------------------------------------
 //Generall Functions
+
+function getRoomNameOfRoomsArrayIndex(index) {
+  console.log("INDEX: " + index);
+  switch (index) {
+    case 0:
+      return "roomOne";
+    case 1:
+      return "roomTwo";
+    case 2:
+      return "roomThree";
+
+    default:
+      return "User didnt join a room.";
+  }
+}
 
 function getRoomCounters() {
   const roomsMemberCounterArray = [];
@@ -80,6 +126,20 @@ function getRoomCounters() {
   }
 
   return roomsMemberCounterArray;
+}
+
+function getUserDataFromSpecificRoom(roomName) {
+  console.log("Getting UserData from room: " + roomName);
+  switch (roomName) {
+    case "roomOne":
+      return roomUserCounter[0];
+    case "roomTwo":
+      return roomUserCounter[1];
+    case "roomThree":
+      return roomUserCounter[2];
+    default:
+      return "AnErrorAppeared";
+  }
 }
 
 function countMembersInRoom(roomArray) {
@@ -117,11 +177,12 @@ function isUserAddabletoSpecificRoom(userID, roomArray) {
   return userWasAddable;
 }
 
-function removeUserFromRoom(userId) {
+function removeUserFromRoomAndReturnRoomName(userId) {
   for (let index = 0; index < roomUserCounter.length; index++) {
     for (let index2 = 0; index2 < roomUserCounter[index].length; index2++) {
       if (roomUserCounter[index][index2] == userId) {
         roomUserCounter[index][index2] = "0";
+        return getRoomNameOfRoomsArrayIndex(index);
       }
     }
   }

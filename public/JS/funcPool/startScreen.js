@@ -75,16 +75,11 @@ class StartScreen {
   }
 
   //TODO: REFACTOR (Var Input)
-  loadGLTF(
-    nameOfFile,
-    pos = [3],
-    scale = [3],
-    scriptID
-    // loadingNotVisible = true
-  ) {
+  loadGLTF(nameOfFile, pos = [3], scale = [3], scriptID) {
     const loader = new GLTFLoader().setPath("../../Assets/");
     const self = this;
     this.loadingBar.visible = true;
+    console.log("NEW MODEL");
     // Load a glTF resource
     loader.load(
       // resource URL
@@ -97,16 +92,12 @@ class StartScreen {
 
         self.addObjectToScene(self.model, scriptID);
 
-        // if (loadingNotVisible == true) {
-        //   self.loadingBar.visible = false;
-        // }
         self.loadingBar.visible = false;
 
         self.renderer.setAnimationLoop(self.render.bind(self));
       },
       // called while loading is progressing
       function (xhr) {
-        console.log(xhr.loaded / xhr.total);
         self.loadingBar.progress = xhr.loaded / xhr.total;
       },
       // called when loading has errors
@@ -243,10 +234,11 @@ class StartScreen {
     console.log(this);
   }
 
-  joinGame() {
+  joinGame(callback) {
     this.setObjectWithName_Invisible(this.startScreenIdentifier);
     this.removeCameraFromDolly();
-    const game = new GameConstructor(this);
+    this.gameConstructor = new GameConstructor(this);
+    if (typeof callback == "function") callback();
   }
 
   //TODO: REFACTOR - NOTWENDIG?
@@ -394,7 +386,6 @@ class StartScreen {
 
   updateRoomNumbers(roomNumbers) {
     const self = this;
-    console.log(self);
     self.ui.updateElement("roomOne", "Room 1 (" + roomNumbers[0] + "/4)");
     self.ui.updateElement("roomTwo", "Room 2 (" + roomNumbers[1] + "/4)");
     self.ui.updateElement("roomThree", "Room 3 (" + roomNumbers[2] + "/4)");
