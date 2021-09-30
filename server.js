@@ -8,6 +8,7 @@ let roomUserCounter = [
   ["0", "0", "0", "0"], //RoomTwo
   ["0", "0", "0", "0"], //RoomThree
 ];
+let socketIO;
 
 // Server & WebSockets
 const server = require("http").createServer(app);
@@ -26,7 +27,7 @@ server.listen(port, function () {
 //----------------------------------------------------------------------
 // Socket.IO connector
 function IoConnect(server) {
-  let socketIO = require("socket.io")(server);
+  socketIO = require("socket.io")(server);
   socketIO.on("connection", (socket) => {
     console.log(socket.id + " joined the server.");
     sendRoomAvailability(socket);
@@ -59,7 +60,7 @@ function sendUserDataFromRoom(socket, roomName) {
 }
 
 function sendNewPlayerJoined(socket, roomName) {
-  socket.to(roomName).emit("newPlayerJoined", socket.id);
+  socketIO.to(roomName).emit("newPlayerJoined", socket.id);
 }
 
 //TODO: EXIT BUTTON FUNCTION - verlässt eigentlich ganzen Server
@@ -83,6 +84,7 @@ function listenToDisconnect(socket) {
 function listenToJoinRoom(socket) {
   socket.on("joinRoom", function (roomName) {
     console.log(socket.id + " is asking to Join Room: " + roomName);
+    console.log(this.roomUserCounter);
     const isUserAllowedToJoin = isUserAddableToRoom(socket.id, roomName);
     sendRoomPermission(socket, isUserAllowedToJoin);
   });
@@ -95,8 +97,8 @@ function listenToSuccessfullyJoinedRoom(socket) {
       console.log(socket.id + " successfully joined Room: " + roomName);
       socket.join(roomName);
       sendRoomsUpdateToAllUsers(socket);
-      sendUserDataFromRoom(socket, roomName);
-      sendNewPlayerJoined(socket, roomName);
+      sendUserDataFromRoom(socket, roomName); //nur an gejointen User
+      sendNewPlayerJoined(socket, roomName); //an Alle
     } else console.log(socket.id + " didnt joined the room.");
   });
 }

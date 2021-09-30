@@ -45,7 +45,13 @@ class Communication {
     });
 
     this.socket.on("newPlayerJoined", function (userID) {
-      self.startScreen.gameConstructor.addNewPlayerToScene(userID);
+      console.log(self.socket.id);
+      if (self.socket.id != userID) {
+        console.log("Add new Player to Scene: " + userID);
+        self.startScreen.gameConstructor.addNewPlayerToScene(userID);
+        console.log("Player will not be added to scene: " + userID);
+      } else {
+      }
     });
   }
 

@@ -8,11 +8,11 @@ class GameConstructor {
     this.gameConstructorIdentifier = "gameConstructor";
     this.startScreen = startScreen;
     this.assetArray = [
-      ["Racetrack2.glb", [110, 0, 0], [5, 5, 5]],
       ["blueBike.glb", [-41, 0, -300], [550, 550, 550]],
       ["greenBike.glb", [-19, 0, -300], [550, 550, 550]],
       ["redBike.glb", [5, 0, -300], [550, 550, 550]],
       ["yellowBike.glb", [27, 0, -300], [550, 550, 550]],
+      ["Racetrack2.glb", [110, 0, 0], [5, 5, 5]],
     ];
 
     const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 0.5);
@@ -99,9 +99,9 @@ class GameConstructor {
 
   loadRaceTrack() {
     this.loadGLTF_ToScene(
-      this.assetArray[0][0],
-      this.assetArray[0][1],
-      this.assetArray[0][2],
+      this.assetArray[4][0],
+      this.assetArray[4][1],
+      this.assetArray[4][2],
       this.gameConstructorIdentifier
     );
   }
@@ -117,9 +117,9 @@ class GameConstructor {
     } else {
       for (let index = 0; index < roomUserData.length; index++) {
         if (roomUserData[index] == ownSocketId) {
-          this.initOwnPlayerWithCamera(1 + index);
+          this.initOwnPlayerWithCamera(index);
         } else if (roomUserData[index] != 0) {
-          this.addNewPlayerToRacerGroup(1 + index, roomUserData[index]);
+          this.addNewPlayerToRacerGroup(index, roomUserData[index]);
         }
       }
     }
@@ -160,16 +160,31 @@ class GameConstructor {
     for (let index = 0; index < sceneChildren.length; index++) {
       if (sceneChildren[index].name == userID) {
         this.startScreen.scene.remove(this.startScreen.scene.children[index]);
+        this.deleteUserFromRoomUserData(userID);
       }
     }
   }
 
+  deleteUserFromRoomUserData(userId) {
+    for (let index = 0; index < this.roomUserData.length; index++) {
+      if (this.roomUserData[index] == userId) {
+        this.roomUserData[index] = "0";
+        break;
+      }
+    }
+    console.log("RoomUserData after disconnect of user: " + this.roomUserData);
+  }
+
   addNewPlayerToScene(userID) {
     if (this.isPlayerAlreadyInScene(userID) == false) {
-      const amountOfPlayers = this.getAmountOfPlayers();
-      this.addNewPlayerToRacerGroup(amountOfPlayers + 1, userID);
-      this.roomUserData[amountOfPlayers] = userID;
+      console.log(userID + " is not already in the game.");
+      const newPlayerIndex = this.getFreeIndex();
+
+      this.addNewPlayerToRacerGroup(newPlayerIndex, userID);
+      this.roomUserData[newPlayerIndex] = userID;
       console.log(this.roomUserData);
+    } else {
+      console.log(userID + " is already in the game.");
     }
   }
 
@@ -177,6 +192,7 @@ class GameConstructor {
     const sceneChildren = this.startScreen.scene.children;
     for (let index = 0; index < sceneChildren.length; index++) {
       if (sceneChildren[index].name == userID) {
+        console.log("isPlayerAlreadyInScene : " + true);
         return true;
       }
     }
@@ -194,14 +210,12 @@ class GameConstructor {
     return new THREE.Vector3().fromArray(array);
   }
 
-  getAmountOfPlayers() {
-    let i = 0;
+  getFreeIndex() {
     for (let index = 0; index < this.roomUserData.length; index++) {
-      if (this.roomUserData[index] != "0") {
-        i++;
+      if (this.roomUserData[index] == "0") {
+        return index;
       }
     }
-    return i;
   }
 }
 
