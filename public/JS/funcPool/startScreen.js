@@ -7,11 +7,13 @@ import { XRControllerModelFactory } from "../../libs/three/jsm/XRControllerModel
 import { GameConstructor } from "./gameConstructor.js";
 import { OrbitControls } from "../../libs/three/jsm/OrbitControls.js";
 import { Communication } from "./communication.js";
+import { Stats } from "../../libs/stats.module.js";
+import { GameController } from "./steering.js";
 
 class StartScreen {
   constructor() {
     this.startScreenIdentifier = "startScreen";
-
+    this.clock = new THREE.Clock();
     const container = document.createElement("div");
     document.body.appendChild(container);
 
@@ -45,6 +47,7 @@ class StartScreen {
     this.raycaster = new THREE.Raycaster();
     this.workingMatrix = new THREE.Matrix4();
     this.workingVector = new THREE.Vector3();
+    this.stats = new Stats();
 
     this.loadingBar = new LoadingBar();
 
@@ -142,12 +145,24 @@ class StartScreen {
       }
       this.ui.update();
 
-      if (this.controllers) {
+      if (this.controllers && this.dolly.visible) {
         const self = this;
         this.controllers.forEach((controller) => {
           self.handleController(controller);
         });
       }
+
+      if (this.gameController != null) {
+        const dt = this.clock.getDelta();
+        if (this.elapsedTime === undefined) this.elapsedTime = 0;
+        this.elapsedTime += dt;
+        if (this.elapsedTime > 0.3) {
+          this.gameController.updateGamepadState();
+          this.elapsedTime = 0;
+        }
+      }
+    } else {
+      this.stats.update();
     }
     // console.log(this.communication.roomsMemberCounterArray);
     this.renderer.render(this.scene, this.camera);
@@ -241,6 +256,7 @@ class StartScreen {
     this.setObjectWithName_Invisible(this.startScreenIdentifier);
     this.removeCameraFromDolly();
     this.gameConstructor = new GameConstructor(this);
+    this.gameController = new GameController(this);
     if (typeof callback == "function") callback();
   }
 
