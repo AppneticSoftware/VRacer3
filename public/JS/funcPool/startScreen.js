@@ -197,6 +197,9 @@ class StartScreen {
       // controller
       const controller = this.renderer.xr.getController(index);
       this.dolly.add(controller);
+      controller.addEventListener("connected", (e) => {
+        console.log(e.data.gamepad);
+      });
 
       const controllerGrip = this.renderer.xr.getControllerGrip(index);
       controllerGrip.add(
