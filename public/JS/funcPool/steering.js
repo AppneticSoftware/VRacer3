@@ -59,51 +59,12 @@ class App {
     this.workingMatrix = new THREE.Matrix4();
     this.workingVector = new THREE.Vector3();
 
-    this.initScene();
+    this.ui = this.createUI();
     this.setupXR();
 
     window.addEventListener("resize", this.resize.bind(this));
 
     this.renderer.setAnimationLoop(this.render.bind(this));
-  }
-
-  random(min, max) {
-    return Math.random() * (max - min) + min;
-  }
-
-  initScene() {
-    this.radius = 0.08;
-
-    this.room = new THREE.LineSegments(
-      new BoxLineGeometry(6, 6, 6, 10, 10, 10),
-      new THREE.LineBasicMaterial({ color: 0x808080 })
-    );
-    this.room.geometry.translate(0, 3, 0);
-    this.scene.add(this.room);
-
-    const geometry = new THREE.IcosahedronBufferGeometry(this.radius, 2);
-
-    for (let i = 0; i < 200; i++) {
-      const object = new THREE.Mesh(
-        geometry,
-        new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff })
-      );
-
-      object.position.x = this.random(-2, 2);
-      object.position.y = this.random(-2, 2);
-      object.position.z = this.random(-2, 2);
-
-      this.room.add(object);
-    }
-
-    this.highlight = new THREE.Mesh(
-      geometry,
-      new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.BackSide })
-    );
-    this.highlight.scale.set(1.2, 1.2, 1.2);
-    this.scene.add(this.highlight);
-
-    this.ui = this.createUI();
   }
 
   createUI() {
@@ -118,7 +79,15 @@ class App {
     return ui;
   }
 
-  //{"trigger":{"button":0},"touchpad":{"button":2,"xAxis":0,"yAxis":1}},"squeeze":{"button":1},"thumbstick":{"button":3,"xAxis":2,"yAxis":3},"button":{"button":6}}}
+  updateUI() {
+    const str = JSON.stringify(this.buttonStates);
+    if (this.strStates === undefined || str != this.strStates) {
+      this.ui.updateElement("body", str);
+      this.ui.update();
+      this.strStates = str;
+    }
+  }
+
   createButtonStates(components) {
     const buttonStates = {};
     this.gamepadIndices = components;
@@ -131,16 +100,8 @@ class App {
       }
     });
 
+    // was ich nachher exportieren muss
     this.buttonStates = buttonStates;
-  }
-
-  updateUI() {
-    const str = JSON.stringify(this.buttonStates);
-    if (this.strStates === undefined || str != this.strStates) {
-      this.ui.updateElement("body", str);
-      this.ui.update();
-      this.strStates = str;
-    }
   }
 
   updateGamepadState() {
@@ -257,32 +218,6 @@ class App {
   updateControllers(info) {
     const self = this;
 
-    function onSelectStart() {
-      this.userData.selectPressed = true;
-    }
-
-    function onSelectEnd() {
-      this.children[0].scale.z = 0;
-      this.userData.selectPressed = false;
-      this.userData.selected = undefined;
-    }
-
-    function onSqueezeStart() {
-      this.userData.squeezePressed = true;
-      if (this.userData.selected !== undefined) {
-        this.attach(this.userData.selected);
-        this.userData.attachedObject = this.userData.selected;
-      }
-    }
-
-    function onSqueezeEnd() {
-      this.userData.squeezePressed = false;
-      if (this.userData.attachedObject !== undefined) {
-        self.room.attach(this.userData.attachedObject);
-        this.userData.attachedObject = undefined;
-      }
-    }
-
     function onDisconnected() {
       const index = this.userData.index;
       console.log(`Disconnected controller ${index}`);
@@ -313,16 +248,6 @@ class App {
         if (key.indexOf("squeeze") != -1) squeeze = true;
       });
 
-      if (trigger) {
-        right.addEventListener("selectstart", onSelectStart);
-        right.addEventListener("selectend", onSelectEnd);
-      }
-
-      if (squeeze) {
-        right.addEventListener("squeezestart", onSqueezeStart);
-        right.addEventListener("squeezeend", onSqueezeEnd);
-      }
-
       right.addEventListener("disconnected", onDisconnected);
     }
 
@@ -337,41 +262,7 @@ class App {
         if (key.indexOf("squeeze") != -1) squeeze = true;
       });
 
-      if (trigger) {
-        left.addEventListener("selectstart", onSelectStart);
-        left.addEventListener("selectend", onSelectEnd);
-      }
-
-      if (squeeze) {
-        left.addEventListener("squeezestart", onSqueezeStart);
-        left.addEventListener("squeezeend", onSqueezeEnd);
-      }
-
       left.addEventListener("disconnected", onDisconnected);
-    }
-  }
-
-  handleController(controller) {
-    if (controller.userData.selectPressed) {
-      controller.children[0].scale.z = 10;
-
-      this.workingMatrix.identity().extractRotation(controller.matrixWorld);
-
-      this.raycaster.ray.origin.setFromMatrixPosition(controller.matrixWorld);
-      this.raycaster.ray.direction
-        .set(0, 0, -1)
-        .applyMatrix4(this.workingMatrix);
-
-      const intersects = this.raycaster.intersectObjects(this.room.children);
-
-      if (intersects.length > 0) {
-        intersects[0].object.add(this.highlight);
-        this.highlight.visible = true;
-        controller.children[0].scale.z = intersects[0].distance;
-        controller.userData.selected = intersects[0].object;
-      } else {
-        this.highlight.visible = false;
-      }
     }
   }
 
@@ -385,12 +276,6 @@ class App {
     const dt = this.clock.getDelta();
 
     if (this.renderer.xr.isPresenting) {
-      const self = this;
-      if (this.controllers) {
-        Object.values(this.controllers).forEach((value) => {
-          self.handleController(value.controller);
-        });
-      }
       if (this.elapsedTime === undefined) this.elapsedTime = 0;
       this.elapsedTime += dt;
       if (this.elapsedTime > 0.3) {
