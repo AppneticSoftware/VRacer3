@@ -20,6 +20,13 @@
 
   <body>
     <div id="content"></div>
-    <script type="module" src="./JS/mainProgramm.js"></script>
+    <script type="module">
+      import { Main } from "./JS/main.js";
+
+      window.onload = function () {
+        const main = new Main();
+        window.app = main;
+      };
+    </script>
   </body>
 </html>

@@ -1,12 +1,12 @@
 import * as THREE from "../../libs/three/three.module.js";
-import { LoadingBar } from "../../libs/LoadingBar.js";
 import { GLTFLoader } from "../../libs/three/jsm/GLTFLoader.js";
+import { UI } from "./ui.js";
 
-class GameConstructor {
-  constructor(startScreen) {
+class Game {
+  constructor(main) {
     //damit man alle Objekte aus der Scene deaktivieren kann
-    this.gameConstructorIdentifier = "gameConstructor";
-    this.startScreen = startScreen;
+    this.gameIdentifier = "gameScreen";
+    this.main = main;
     this.assetArray = [
       ["blueBike.glb", [-41, 0, -300], [550, 550, 550]],
       ["greenBike.glb", [-19, 0, -300], [550, 550, 550]],
@@ -15,63 +15,56 @@ class GameConstructor {
       ["Racetrack2.glb", [110, 0, 0], [5, 5, 5]],
     ];
 
-    const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 0.5);
-    startScreen.addObjectToScene(ambient, this.gameConstructorIdentifier);
-
-    const light = new THREE.DirectionalLight(0xffffff, 1.5);
-    light.position.set(0.2, 1, 1);
-    startScreen.addObjectToScene(light, this.gameConstructorIdentifier);
-
-    this.loadingBar = new LoadingBar();
-
-    this.loadRaceTrack();
-    // this.startScreen.communication.userSuccessfullyJoined(true);
+    this.setupRaceTrackAsset();
   }
 
-  //---------------------------------------------------------------------------------
+  //----------------------------------------------------------------
+  //Setup Functions
 
-  setupCameraAndUI() {
+  setupRaceTrackAsset() {
+    this.main.loadGLTF(
+      this.assetArray[4][0],
+      this.assetArray[4][1],
+      this.assetArray[4][2],
+      this.gameIdentifier
+    );
+  }
+
+  setupCamera() {
     this.cameraDolly = new THREE.Object3D();
     this.cameraDolly.position.set(0, 13, 0);
     this.cameraDolly.rotation.x = (15 * Math.PI) / 180;
     this.cameraDolly.rotation.y = -(180 * Math.PI) / 180;
-    this.cameraDolly.add(this.startScreen.camera);
-    // this.addObjectToStartScreenScene(this.cameraDolly);
-    // this.startScreen.renderFunc();
+    this.cameraDolly.add(this.main.camera);
   }
 
-  loadGLTF_ToScene(nameOfFile, pos = [3], scale = [3], nameOfAsset) {
-    const loader = new GLTFLoader().setPath("../../Assets/");
-    const self = this;
-    this.loadingBar.visible = true;
-    // Load a glTF resource
-    return loader.load(
-      // resource URL
-      nameOfFile,
-      // called when the resource is loaded
-      function (gltf) {
-        const model = gltf.scene;
-        model.position.set(pos[0], pos[1], pos[2]);
-        model.scale.set(scale[0], scale[1], scale[2]);
-        self.addObjectToStartScreenScene(model, nameOfAsset);
-        self.loadingBar.visible = false;
-        self.startScreen.renderFunc();
-      },
-      // called while loading is progressing
-      function (xhr) {
-        self.loadingBar.progress = xhr.loaded / xhr.total;
-      },
-      // called when loading has errors
-      function (error) {
-        console.log("LoadGLTF Function: " + error);
+  setupGameUI() {
+    this.uiInstance = new UI(this);
+    this.uiInstance.setupGameUI();
+    //TODO: Ändern
+    // this.cameraDolly.add(this.uiInstance.uiGameScreen.mesh);
+    this.main.addObjectToScene(this.uiInstance.uiGameScreen.mesh);
+  }
+
+  //----------------------------------------------------------------
+  //Generell Functions
+
+  getPosVectorOfArray(array) {
+    return new THREE.Vector3().fromArray(array);
+  }
+
+  getFreeIndex() {
+    for (let index = 0; index < this.roomUserData.length; index++) {
+      if (this.roomUserData[index] == "0") {
+        return index;
       }
-    );
+    }
   }
-
+  //REFACTOR MÖGLICH
   loadGLTF_ToOtherObject(nameOfFile, scale = [3], nameOfAsset, otherObject) {
     const loader = new GLTFLoader().setPath("../../Assets/");
     const self = this;
-    this.loadingBar.visible = true;
+    this.main.loadingBar.visible = true;
     // Load a glTF resource
     return loader.load(
       // resource URL
@@ -83,12 +76,12 @@ class GameConstructor {
         model.scale.set(scale[0], scale[1], scale[2]);
         model.name = nameOfAsset;
         otherObject.add(model);
-        self.loadingBar.visible = false;
-        self.startScreen.renderFunc();
+        self.main.loadingBar.visible = false;
+        self.main.exportRenderFunc();
       },
       // called while loading is progressing
       function (xhr) {
-        self.loadingBar.progress = xhr.loaded / xhr.total;
+        self.main.loadingBar.progress = xhr.loaded / xhr.total;
       },
       // called when loading has errors
       function (error) {
@@ -97,14 +90,17 @@ class GameConstructor {
     );
   }
 
-  loadRaceTrack() {
-    this.loadGLTF_ToScene(
-      this.assetArray[4][0],
-      this.assetArray[4][1],
-      this.assetArray[4][2],
-      this.gameConstructorIdentifier
-    );
+  getControllerValuesPrinted() {
+    let str = JSON.stringify(this.main.controller.buttonStatesRight);
+    str = str + JSON.stringify(this.main.controller.buttonStatesLeft);
+    if (this.strStates === undefined || str != this.strStates) {
+      this.uiInstance.uiGameScreen.updateElement("body", str);
+      this.uiInstance.uiGameScreen.update();
+      this.strStates = str;
+    }
   }
+  //----------------------------------------------------------------
+  //Player Functions
 
   initPlayers(roomUserData, ownSocketId) {
     this.roomUserData = roomUserData;
@@ -124,11 +120,11 @@ class GameConstructor {
       }
     }
 
-    this.addObjectToStartScreenScene(this.racerGroup);
+    this.main.addObjectToScene(this.racerGroup, this.gameIdentifier);
   }
 
   initOwnPlayerWithCamera(index) {
-    this.setupCameraAndUI();
+    this.setupCamera();
     this.raceDolly = new THREE.Object3D();
     this.loadGLTF_ToOtherObject(
       this.assetArray[index][0],
@@ -141,12 +137,12 @@ class GameConstructor {
     this.raceDolly.position.y = posBike.y;
     this.raceDolly.position.z = posBike.z;
     this.raceDolly.add(this.cameraDolly);
-    this.addObjectToStartScreenScene(this.raceDolly);
-    this.startScreen.renderFunc();
+    this.main.addObjectToScene(this.raceDolly, this.gameIdentifier);
+    this.main.exportRenderFunc();
   }
 
   addNewPlayerToRacerGroup(index, id) {
-    this.loadGLTF_ToScene(
+    this.main.loadGLTF(
       this.assetArray[index][0],
       this.assetArray[index][1],
       this.assetArray[index][2],
@@ -156,10 +152,10 @@ class GameConstructor {
 
   removePlayerFromRacer(userID) {
     //REMOVE OF RACER QAD  - better https://newbedev.com/how-do-i-clear-three-js-scene
-    const sceneChildren = this.startScreen.scene.children;
+    const sceneChildren = this.main.scene.children;
     for (let index = 0; index < sceneChildren.length; index++) {
       if (sceneChildren[index].name == userID) {
-        this.startScreen.scene.remove(this.startScreen.scene.children[index]);
+        this.main.scene.remove(sceneChildren[index]);
         this.deleteUserFromRoomUserData(userID);
       }
     }
@@ -189,7 +185,7 @@ class GameConstructor {
   }
 
   isPlayerAlreadyInScene(userID) {
-    const sceneChildren = this.startScreen.scene.children;
+    const sceneChildren = this.main.scene.children;
     for (let index = 0; index < sceneChildren.length; index++) {
       if (sceneChildren[index].name == userID) {
         console.log("isPlayerAlreadyInScene : " + true);
@@ -198,25 +194,6 @@ class GameConstructor {
     }
     return false;
   }
-
-  addObjectToStartScreenScene(
-    object,
-    nameOfAsset = this.gameConstructorIdentifier
-  ) {
-    this.startScreen.addObjectToScene(object, nameOfAsset);
-  }
-
-  getPosVectorOfArray(array) {
-    return new THREE.Vector3().fromArray(array);
-  }
-
-  getFreeIndex() {
-    for (let index = 0; index < this.roomUserData.length; index++) {
-      if (this.roomUserData[index] == "0") {
-        return index;
-      }
-    }
-  }
 }
 
-export { GameConstructor };
+export { Game };

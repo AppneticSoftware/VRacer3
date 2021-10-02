@@ -42,12 +42,10 @@ function IoConnect(server) {
 //Socket Functions - Sender
 
 function sendRoomAvailability(socket) {
-  // let roomsMemberCounterArray =
   socket.emit("roomAvailability", getRoomCounters());
 }
 
 function sendRoomPermission(socket, isAllowed) {
-  // let roomsMemberCounterArray =
   socket.emit("roomPermission", isAllowed);
 }
 
@@ -84,7 +82,6 @@ function listenToDisconnect(socket) {
 function listenToJoinRoom(socket) {
   socket.on("joinRoom", function (roomName) {
     console.log(socket.id + " is asking to Join Room: " + roomName);
-    console.log(this.roomUserCounter);
     const isUserAllowedToJoin = isUserAddableToRoom(socket.id, roomName);
     sendRoomPermission(socket, isUserAllowedToJoin);
   });
@@ -107,7 +104,6 @@ function listenToSuccessfullyJoinedRoom(socket) {
 //Generall Functions
 
 function getRoomNameOfRoomsArrayIndex(index) {
-  console.log("INDEX: " + index);
   switch (index) {
     case 0:
       return "roomOne";
@@ -131,7 +127,6 @@ function getRoomCounters() {
 }
 
 function getUserDataFromSpecificRoom(roomName) {
-  console.log("Getting UserData from room: " + roomName);
   switch (roomName) {
     case "roomOne":
       return roomUserCounter[0];
@@ -168,15 +163,15 @@ function isUserAddableToRoom(userId, roomName) {
 }
 
 function isUserAddabletoSpecificRoom(userID, roomArray) {
-  let userWasAddable = false;
+  let userIsAllowed = false;
   for (let index = 0; index < roomArray.length; index++) {
     if (roomArray[index] == "0") {
       roomArray[index] = userID;
-      userWasAddable = true;
+      userIsAllowed = true;
       break;
     }
   }
-  return userWasAddable;
+  return userIsAllowed;
 }
 
 function removeUserFromRoomAndReturnRoomName(userId) {

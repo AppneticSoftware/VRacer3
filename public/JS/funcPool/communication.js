@@ -1,71 +1,97 @@
 class Communication {
-  constructor(startScreen) {
+  constructor(main) {
     this.socket = io();
-    this.startScreen = startScreen;
+    this.main = main;
+    this.lobby = main.lobby;
+    this.uiInstance = main.lobby.uiInstance;
+    this.startCommunication();
   }
   startCommunication() {
+    this.listenToConnect(this.socket);
+    this.listenToLobbyUpdate(this.socket);
+    this.listenToRoomPermission(this.socket);
+    this.listenToRoomUserData(this.socket);
+    this.listenToUserDisconnect(this.socket);
+    this.listenToNewPlayerJoined(this.socket);
+  }
+
+  //-----------------------------------------------------------------------
+  //Socket Functions - Sender
+  sendUserSuccessfullyJoined(isJoinedRoom) {
+    this.socket.emit("joinConfirmation", isJoinedRoom, this.roomName);
+  }
+
+  sendJoinRoomRequest(roomName) {
+    this.roomName = roomName;
+    this.socket.emit("joinRoom", roomName);
+    //NACHFRAGEN: Warum wird dieses Console Log nicht geprintet?
+    // console.log("HALLO FROM EMITSOMETHING");
+  }
+
+  //-----------------------------------------------------------------------
+  //Socket Functions - Listener
+
+  listenToConnect(socket) {
+    socket.on("connect", function () {
+      console.log("App connected");
+    });
+  }
+
+  listenToLobbyUpdate(socket) {
     const self = this;
-    //PRÄSENTATION: SCOPE BEISPIEL
-    // console.log(this);
-    this.socket.on("connect", function () {
-      console.log("App connect");
-      // console.log(this);
-    });
-
-    this.socket.on("roomAvailability", function (roomUserCounter) {
-      self.startScreen.updateRoomNumbers(roomUserCounter);
-    });
-
-    this.socket.on("roomPermission", function (isAllowed) {
-      if (isAllowed == true) {
-        console.log("Joining is allowed");
-        self.startScreen.joinGame(function callFunction() {
-          self.userSuccessfullyJoined(true);
-        });
+    socket.on("roomAvailability", function (roomUserCounter) {
+      if (self.uiInstance == null) {
+        self.uiInstance = self.main.lobby.uiInstance;
       } else {
-        console.log("Joining is not allowed");
-        self.startScreen.showErrorMsg(
-          "You are not allowed to join this room. Please try another one."
-        );
-        self.userSuccessfullyJoined(false);
+        self.uiInstance.updateRoomNumbers(roomUserCounter);
       }
     });
+  }
 
-    this.socket.on("roomUserData", function (roomUserData) {
-      console.log(roomUserData);
-      self.startScreen.gameConstructor.initPlayers(
-        roomUserData,
-        self.socket.id
-      );
+  listenToRoomPermission(socket) {
+    const self = this;
+    socket.on("roomPermission", function (isAllowed) {
+      if (isAllowed == true) {
+        self.main.joinGame(function callFunction() {
+          self.sendUserSuccessfullyJoined(true);
+        });
+      } else {
+        self.main.lobby.uiInstance.showErrorMsg(
+          "You are not allowed to join this room. Please try another one."
+        );
+        self.sendUserSuccessfullyJoined(false);
+      }
     });
+  }
 
-    this.socket.on("userDisconnect", function (userID) {
+  listenToRoomUserData(socket) {
+    const self = this;
+    socket.on("roomUserData", function (roomUserData) {
+      self.main.game.initPlayers(roomUserData, socket.id);
+    });
+  }
+
+  listenToUserDisconnect(socket) {
+    const self = this;
+    socket.on("userDisconnect", function (userID) {
       console.log(userID + " left the game.");
-      self.startScreen.gameConstructor.removePlayerFromRacer(userID);
+      self.main.game.removePlayerFromRacer(userID);
     });
+  }
 
-    this.socket.on("newPlayerJoined", function (userID) {
-      console.log(self.socket.id);
+  listenToNewPlayerJoined(socket) {
+    const self = this;
+    socket.on("newPlayerJoined", function (userID) {
       if (self.socket.id != userID) {
         console.log("Add new Player to Scene: " + userID);
-        self.startScreen.gameConstructor.addNewPlayerToScene(userID);
+        self.main.game.addNewPlayerToScene(userID);
         console.log("Player will not be added to scene: " + userID);
       } else {
       }
     });
   }
-
-  joinRoom(roomName) {
-    this.roomName = roomName;
-    this.socket.emit("joinRoom", roomName);
-
-    //NACHFRAGEN: Warum wird dieses Console Log nicht geprintet?
-    // console.log("HALLO FROM EMITSOMETHING");
-  }
-
-  userSuccessfullyJoined(isJoinedRoom) {
-    this.socket.emit("joinConfirmation", isJoinedRoom, this.roomName);
-  }
+  //-----------------------------------------------------------------------
+  //Generall Functions
 }
 
 export { Communication };
