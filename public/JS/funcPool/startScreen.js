@@ -185,6 +185,7 @@ class StartScreen {
     this.addCameraToDolly();
     this.controllers = this.setupControllers();
     this.addObjectToScene(this.dolly, this.startScreenIdentifier);
+    // this.addObjectToScene(this.dolly);
     this.renderer.setAnimationLoop(this.render.bind(this));
   }
 
@@ -212,10 +213,6 @@ class StartScreen {
       // controller
       const controller = this.renderer.xr.getController(index);
       this.dolly.add(controller);
-      controller.addEventListener("connected", (e) => {
-        console.log(e.data.gamepad);
-      });
-
       const controllerGrip = this.renderer.xr.getControllerGrip(index);
       controllerGrip.add(
         controllerModelFactory.createControllerModel(controllerGrip)
@@ -255,8 +252,8 @@ class StartScreen {
   joinGame(callback) {
     this.setObjectWithName_Invisible(this.startScreenIdentifier);
     this.removeCameraFromDolly();
-    this.gameConstructor = new GameConstructor(this);
     this.gameController = new GameController(this);
+    this.gameConstructor = new GameConstructor(this);
     if (typeof callback == "function") callback();
   }
 

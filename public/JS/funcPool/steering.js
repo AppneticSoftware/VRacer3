@@ -76,13 +76,18 @@ class GameController {
     const session = this.startScreen.renderer.xr.getSession();
 
     const inputSource = session.inputSources[0];
+    // console.log("InputSoruce: " + inputSource);
+    // console.log("InputSoruce.Gamepad: " + inputSource.gamepad);
+    // console.log("gamePadIndices: " + this.gamepadIndices);
+    // console.log("ButtonState: " + this.buttonStates);
+    // console.log("UI: " + this.ui);
 
     if (
       inputSource &&
       inputSource.gamepad &&
-      this.gamepadIndices &&
+      this.gamepadIndices && //UNDEF
       this.ui &&
-      this.buttonStates
+      this.buttonStates //UNDEF
     ) {
       const gamepad = inputSource.gamepad;
       try {
@@ -113,6 +118,7 @@ class GameController {
     const self = this;
 
     function onConnected(event) {
+      console.log("CONNECTED FIRED");
       const info = {};
 
       fetchProfile(event.data, DEFAULT_PROFILES_PATH, DEFAULT_PROFILE).then(
@@ -140,7 +146,6 @@ class GameController {
     }
 
     const controller = this.startScreen.renderer.xr.getController(0);
-
     controller.addEventListener("connected", onConnected);
 
     const modelFactory = new XRControllerModelFactory();
