@@ -122,6 +122,8 @@ class Game {
     this.roomName = roomName;
     this.main.setObjectWithName_Visible(this.gameIdentifier);
     this.addCameraToDolly();
+    //zwecks getDelta - sonst wird meldung bei Exit nicht angezeigt
+    this.clock = new THREE.Clock();
     console.log(this.main.scene.children);
   }
 
@@ -184,7 +186,7 @@ class Game {
     }
     this.uiVisible = true;
     this.elapsedTimeUI += dt;
-    if (this.elapsedTimeUI > 0.8) {
+    if (this.elapsedTimeUI > 1.2) {
       this.uiVisible = !this.uiVisible;
       this.elapsedTimeUI = 0;
     }
@@ -200,7 +202,7 @@ class Game {
     }
     this.elapsedTimeExit += dt;
     if (
-      this.elapsedTimeExit > 0.8 &&
+      this.elapsedTimeExit > 1.2 &&
       this.exitGameBtnPressed == true &&
       this.uiInstance.uiGameScreen.visible == true
     ) {
