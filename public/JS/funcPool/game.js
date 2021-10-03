@@ -107,8 +107,10 @@ class Game {
 
   detectButtonPress() {
     const numb = this.raceDolly.position.x;
-
     this.printOnUI(numb.toString());
+    console.log(
+      this.raceDolly.position.x + this.maxSpeed * this.getDrivingDirection()
+    );
     if (this.raceDolly) {
       if (this.aButton != 0) {
         //Exit game
@@ -169,8 +171,7 @@ class Game {
   }
 
   changeRacerPosX() {
-    const numb =
-      this.raceDolly.position.x + this.maxSpeed * this.getDrivingDirection;
+    const numb = this.raceDolly.position.x + this.maxSpeed * this.xStick;
 
     this.printOnUI(numb.toString());
   }
