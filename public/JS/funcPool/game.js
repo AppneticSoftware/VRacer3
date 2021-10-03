@@ -149,6 +149,7 @@ class Game {
       if (this.bButton != 0) {
         //Start game
         this.exitGameBtnPressed = false;
+        this.elapsedTimeExit = 0;
         this.printWarnMsg("B Button pressed");
       }
       if (this.squeeze != 0) {
@@ -177,15 +178,15 @@ class Game {
 
   manageUI_Visibility() {
     const dt = this.clock.getDelta();
-    if (this.elapsedTime === undefined) {
-      this.elapsedTime = 0;
+    if (this.elapsedTimeUI === undefined) {
+      this.elapsedTimeUI = 0;
       this.uiVisible = true;
     }
     this.uiVisible = true;
-    this.elapsedTime += dt;
-    if (this.elapsedTime > 0.8) {
+    this.elapsedTimeUI += dt;
+    if (this.elapsedTimeUI > 0.8) {
       this.uiVisible = !this.uiVisible;
-      this.elapsedTime = 0;
+      this.elapsedTimeUI = 0;
     }
     this.changeVisibilityOfUI(this.uiVisible);
   }
@@ -194,12 +195,16 @@ class Game {
     const dt = this.clock.getDelta();
     this.printWarnMsg("Exit Game? Y: Tab 'A' - N: Tab 'B'");
     this.exitGameBtnPressed = true;
-    if (this.elapsedTime === undefined) {
-      this.elapsedTime = 0;
+    if (this.elapsedTimeExit === undefined) {
+      this.elapsedTimeExit = 0;
     }
-    this.elapsedTime += dt;
-    if (this.elapsedTime > 0.8 && this.exitGameBtnPressed == true) {
-      this.elapsedTime = 0;
+    this.elapsedTimeExit += dt;
+    if (
+      this.elapsedTimeExit > 0.8 &&
+      this.exitGameBtnPressed == true &&
+      this.uiInstance.uiGameScreen.visible == true
+    ) {
+      this.elapsedTimeExit = 0;
       this.exitGameBtnPressed = false;
       this.main.communication.sendUserExitedGame(this.roomName);
       this.main.backToLobby();
