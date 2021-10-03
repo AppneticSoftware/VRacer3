@@ -138,7 +138,7 @@ class Game {
   detectButtonPress() {
     // const numb = this.raceDolly.rotation.z;
     // this.printOnUI(numb.toString());
-    const dt = this.clock.getDelta();
+
     if (this.raceDolly) {
       if (this.aButton != 0) {
         //Exit game
@@ -174,6 +174,7 @@ class Game {
   }
 
   manageUI_Visibility() {
+    const dt = this.clock.getDelta();
     if (this.elapsedTime === undefined) {
       this.elapsedTime = 0;
       this.uiVisible = true;
@@ -188,6 +189,7 @@ class Game {
   }
 
   manageExitButtonPressed() {
+    const dt = this.clock.getDelta();
     this.printWarnMsg("Exit Game? Y: Tab 'A' - N: Tab 'B'");
     this.exitGameBtnPressed = true;
     if (this.elapsedTime === undefined) {
