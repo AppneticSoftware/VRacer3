@@ -284,7 +284,7 @@ class UI {
     // ui.mesh.position.set(-40.8, 14.5, -297);
     ui.mesh.position.set(0, 0, 0);
     ui.mesh.rotation.y = -(180 * Math.PI) / 180;
-    ui.mesh.rotation.x = (15 * Math.PI) / 180;
+    ui.mesh.rotation.x = -(5 * Math.PI) / 180;
     this.uiGameScreen = ui;
   }
 }
