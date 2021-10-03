@@ -144,7 +144,7 @@ class Game {
     // this.printOnUI(numb.toString());
 
     if (this.raceDolly) {
-      if (this.aButton != 0) {
+      if (this.stickButton != 0) {
         //Exit game
         this.manageExitButtonPressed();
       }
@@ -299,7 +299,7 @@ class Game {
     } else {
       for (let index = 0; index < roomUserData.length; index++) {
         if (roomUserData[index] == ownSocketId) {
-          this.initOwnPlayerWithCamera(index);
+          this.initOwnPlayerWithCamera(index, ownSocketId);
         } else if (roomUserData[index] != 0) {
           this.addNewPlayerToRacerGroup(index, roomUserData[index]);
         }
@@ -309,14 +309,14 @@ class Game {
     this.main.addObjectToScene(this.racerGroup, this.gameIdentifier);
   }
 
-  initOwnPlayerWithCamera(index) {
+  initOwnPlayerWithCamera(index, socketId) {
     this.raceDolly = new THREE.Object3D();
     this.setupCamera();
     this.setupGameUI();
     this.loadGLTF_ToOtherObject(
       this.assetArray[index][0],
       this.assetArray[index][2],
-      this.assetArray[index][0],
+      socketId,
       this.raceDolly
     );
     const posBike = this.getPosVectorOfArray(this.assetArray[index][1]);
@@ -353,6 +353,7 @@ class Game {
     for (let index = 0; index < this.roomUserData.length; index++) {
       this.removePlayerFromRacer(this.roomUserData[index]);
     }
+    this.main.scene.remove(this.raceDolly);
   }
 
   deleteUserFromRoomUserData(userId) {
