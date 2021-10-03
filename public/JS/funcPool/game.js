@@ -166,7 +166,7 @@ class Game {
 
   changeRacerRotationZ() {
     if (
-      this.raceDolly.rotation.z < this.maxRotation ||
+      this.raceDolly.rotation.z < this.maxRotation &&
       this.raceDolly.rotation.z > -1 * this.maxRotation
     )
       this.raceDolly.rotation.z =
@@ -187,6 +187,7 @@ class Game {
     this.uiInstance.uiGameScreen.visible =
       !this.uiInstance.uiGameScreen.visible;
   }
+
   updateGamePos() {
     //wird in Main aufgerufen
     //ADD UPDATE FOR OTHER PLAYERS
