@@ -9,6 +9,7 @@ class Game {
     this.main = main;
     this.roomName = roomName;
     this.gameActive = true;
+    this.clock = new THREE.Clock();
     this.assetArray = [
       ["blueBike.glb", [-41, 0, -300], [550, 550, 550]],
       ["greenBike.glb", [-19, 0, -300], [550, 550, 550]],
@@ -109,6 +110,7 @@ class Game {
     this.gameActive = false;
     this.main.setObjectWithName_Invisible(this.gameIdentifier);
     this.removeCameraFromDolly();
+    this.removeAllPlayerFromRacer();
   }
 
   setGameActive(roomName) {
@@ -134,8 +136,9 @@ class Game {
   detectButtonPress() {
     // const numb = this.raceDolly.rotation.z;
     // this.printOnUI(numb.toString());
+    const dt = this.clock.getDelta();
     if (this.raceDolly) {
-      if (this.aButton != 0) {
+      if (this.trigger != 0) {
         //Exit game
         this.printErrorMsg("Exit Game? Y: Tab 'A' - N: Tab 'B'");
         if (this.exitGameBtnPressed && this.exitGameBtnPressed == true) {
@@ -159,7 +162,11 @@ class Game {
       }
       if (this.stickButton != 0) {
         //Show UI;
-        this.changeVisibilityOfUI();
+        if (this.elapsedTime === undefined) this.elapsedTime = 0;
+        this.elapsedTime += dt;
+        if (this.elapsedTime > 0.8) {
+          this.changeVisibilityOfUI();
+        }
       }
       if (this.xStick != 0) {
         //Link bzw. Rechts
@@ -307,6 +314,12 @@ class Game {
         this.main.scene.remove(sceneChildren[index]);
         this.deleteUserFromRoomUserData(userID);
       }
+    }
+  }
+
+  removeAllPlayerFromRacer() {
+    for (let index = 0; index < this.roomUserData.length; index++) {
+      this.removePlayerFromRacer(this.roomUserData[index]);
     }
   }
 
