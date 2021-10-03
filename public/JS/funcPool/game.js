@@ -131,7 +131,7 @@ class Game {
         //Link bzw. Rechts
         this.changeRacerRotationZ();
         this.changeRacerRotationY();
-        this.changeRacerPosX();
+        // this.changeRacerPosX();
       } else {
         this.raceDolly.rotation.z = 0;
         this.raceDolly.rotation.y = 0;
