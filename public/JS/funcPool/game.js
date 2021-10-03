@@ -199,9 +199,10 @@ class Game {
     }
     this.elapsedTime += dt;
     if (this.elapsedTime > 0.8 && this.exitGameBtnPressed == true) {
+      this.elapsedTime = 0;
+      this.exitGameBtnPressed = false;
       this.main.communication.sendUserExitedGame(this.roomName);
       this.main.backToLobby();
-      this.elapsedTime = 0;
     }
   }
 
