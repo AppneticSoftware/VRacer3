@@ -107,7 +107,7 @@ class Game {
   }
 
   detectButtonPress() {
-    const numb = this.raceDolly.rotation.z;
+    const numb = this.raceDolly.rotation.y;
     this.printOnUI(numb.toString());
     if (this.raceDolly) {
       if (this.aButton != 0) {
@@ -178,7 +178,7 @@ class Game {
       this.raceDolly.rotation.y > -1 * this.maxRotation
     )
       this.raceDolly.rotation.y =
-        this.raceDolly.rotation.y + this.maxRotation * this.xStick * -1;
+        this.raceDolly.rotation.y + (this.maxRotation / 100) * this.xStick * -1;
   }
 
   changeRacerPosX() {
