@@ -147,7 +147,8 @@ class Game {
   }
 
   changeVisibilityOfUI() {
-    this.uiInstance.uiGameScreen.mesh.visible = !this.uiGameScreen.mesh.visible;
+    this.uiInstance.uiGameScreen.visible =
+      !this.uiInstance.uiGameScreen.visible;
   }
   updateGamePos() {
     //wird in Main aufgerufen
