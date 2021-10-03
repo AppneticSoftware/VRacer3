@@ -17,7 +17,7 @@ class Game {
 
     this.maxSpeed = 10;
     this.maxTurningSpeed = 4;
-    this.maxRotation = (60 * Math.PI) / 180;
+    this.maxRotation = 1;
 
     this.setupRaceTrackAsset();
   }
@@ -119,7 +119,7 @@ class Game {
         this.printOnUI("squeeze pressed");
       }
       if (this.trigger != 0) {
-        //Gas
+        //Gas + vorwärts oder rückwärts
         this.changeRacerPosZ();
       }
       if (this.stickButton != 0) {
@@ -129,9 +129,10 @@ class Game {
       if (this.xStick != 0) {
         //Link bzw. Rechts
         this.changeRacerRotationZ();
+        this.changeRacerRotationY();
         this.changeRacerPosX();
       } else {
-        // this.raceDolly.rotation.z = 0;
+        this.raceDolly.rotation.z = 0;
       }
     }
   }
@@ -169,6 +170,15 @@ class Game {
     )
       this.raceDolly.rotation.z =
         this.raceDolly.rotation.z + this.maxRotation * this.xStick * -1;
+  }
+
+  changeRacerRotationY() {
+    if (
+      this.raceDolly.rotation.y < this.maxRotation ||
+      this.raceDolly.rotation.y > -1 * this.maxRotation
+    )
+      this.raceDolly.rotation.y =
+        this.raceDolly.rotation.y + this.maxRotation * this.xStick * -1;
   }
 
   changeRacerPosX() {
