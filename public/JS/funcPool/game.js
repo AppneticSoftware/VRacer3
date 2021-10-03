@@ -15,7 +15,7 @@ class Game {
       ["Racetrack2.glb", [110, 0, 0], [5, 5, 5]],
     ];
 
-    this.maxSpeed = 2;
+    this.maxSpeed = 4;
 
     this.setupRaceTrackAsset();
   }
@@ -118,15 +118,16 @@ class Game {
     if (this.squeeze != 0) {
       //Bremse
       this.printOnUI("squeeze pressed");
-      this.changeRacerPos();
     }
     if (this.trigger != 0) {
       //Gas
       this.printOnUI("trigger pressed");
+      this.changeRacerPos();
     }
     if (this.stickButton != 0) {
       //Show UI
       this.printOnUI("Stick Button pressed");
+      this.changeVisibilityOfUI();
     }
     if (this.xStick != 0) {
       //Vorwärts bzw. Rückwärts
@@ -140,11 +141,14 @@ class Game {
 
   changeRacerPos() {
     console.log(this.raceDolly.position);
-    this.raceDolly.position.x =
-      this.raceDolly.position.x + this.maxSpeed * this.squeeze;
+    this.raceDolly.position.z =
+      this.raceDolly.position.z + this.maxSpeed * this.trigger;
     console.log(this.raceDolly.position);
   }
 
+  changeVisibilityOfUI() {
+    this.uiInstance.uiGameScreen.mesh.visible = !this.uiGameScreen.mesh.visible;
+  }
   updateGamePos() {
     //wird in Main aufgerufen
     //ADD UPDATE FOR OTHER PLAYERS
