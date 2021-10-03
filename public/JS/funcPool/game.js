@@ -140,12 +140,16 @@ class Game {
   }
 
   getDrivingDirection() {
-    //this.ystick == minus 1 => vorwärts
+    //minus 1 => vorwärts
 
     if (this.yStick > 0) {
       return -1;
     } else {
-      return 1;
+      if (this.trigger == 0) {
+        return 1;
+      } else {
+        return -1;
+      }
     }
   }
 
@@ -161,26 +165,32 @@ class Game {
 
   changeRacerPosZ() {
     this.raceDolly.position.z =
-      this.raceDolly.position.z + this.maxSpeed * this.trigger * -1;
+      this.raceDolly.position.z +
+      this.maxSpeed * this.trigger * this.getDrivingDirection();
   }
 
   changeRacerRotationZ() {
     if (
       this.raceDolly.rotation.z < this.maxRotation &&
-      this.raceDolly.rotation.z > -1 * this.maxRotation
+      this.raceDolly.rotation.z > -1 * this.maxRotation &&
+      this.trigger != 0
     )
       this.raceDolly.rotation.z =
         this.raceDolly.rotation.z + this.maxRotation * this.xStick * 0.1;
   }
 
   changeRacerRotationY() {
-    this.raceDolly.rotation.y += this.maxRotationY * this.xStick * -1;
+    if (this.trigger != 0) {
+      this.raceDolly.rotation.y += this.maxRotationY * this.xStick * -1;
+    }
   }
 
   changeRacerPosX() {
-    const numb =
-      this.raceDolly.position.x + this.maxTurningSpeed * this.xStick * -1;
-    this.raceDolly.position.x = numb;
+    if (this.trigger != 0) {
+      const numb =
+        this.raceDolly.position.x + this.maxTurningSpeed * this.xStick * -1;
+      this.raceDolly.position.x = numb;
+    }
   }
 
   changeVisibilityOfUI() {
