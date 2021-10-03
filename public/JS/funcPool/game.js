@@ -140,15 +140,13 @@ class Game {
   }
 
   getDrivingDirection() {
-    //minus 1 => vorwärts
-
     if (this.yStick > 0) {
-      return -1;
+      return 1;
     } else {
       if (this.trigger == 0) {
-        return 1;
-      } else {
         return -1;
+      } else {
+        return 1;
       }
     }
   }
