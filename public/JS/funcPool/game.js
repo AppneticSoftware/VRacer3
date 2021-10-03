@@ -183,7 +183,7 @@ class Game {
     }
     this.uiVisible = true;
     this.elapsedTime += dt;
-    if (this.elapsedTime > 0.5) {
+    if (this.elapsedTime > 0.8) {
       this.uiVisible = !this.uiVisible;
       this.elapsedTime = 0;
     }
@@ -198,7 +198,7 @@ class Game {
       this.elapsedTime = 0;
     }
     this.elapsedTime += dt;
-    if (this.elapsedTime > 0.5 && this.exitGameBtnPressed == true) {
+    if (this.elapsedTime > 0.8 && this.exitGameBtnPressed == true) {
       this.main.communication.sendUserExitedGame(this.roomName);
       this.main.backToLobby();
       this.elapsedTime = 0;
