@@ -47,11 +47,13 @@ class Game {
   }
 
   setupGameUI() {
-    this.uiInstance = new UI(this);
-    this.uiInstance.setupGameUI();
-    this.gameUIDolly = new THREE.Object3D();
-    this.gameUIDolly.add(this.uiInstance.uiGameScreen.mesh);
-    this.gameUIDolly.position.set(0, 14.5, 2);
+    if (this.uiInstance == null) {
+      this.uiInstance = new UI(this);
+      this.uiInstance.setupGameUI();
+      this.gameUIDolly = new THREE.Object3D();
+      this.gameUIDolly.add(this.uiInstance.uiGameScreen.mesh);
+      this.gameUIDolly.position.set(0, 14.5, 2);
+    }
   }
 
   //----------------------------------------------------------------
@@ -181,7 +183,7 @@ class Game {
     }
     this.uiVisible = true;
     this.elapsedTime += dt;
-    if (this.elapsedTime > 0.3) {
+    if (this.elapsedTime > 0.5) {
       this.uiVisible = !this.uiVisible;
       this.elapsedTime = 0;
     }
@@ -196,7 +198,7 @@ class Game {
       this.elapsedTime = 0;
     }
     this.elapsedTime += dt;
-    if (this.elapsedTime > 0.3 && this.exitGameBtnPressed == true) {
+    if (this.elapsedTime > 0.5 && this.exitGameBtnPressed == true) {
       this.main.communication.sendUserExitedGame(this.roomName);
       this.main.backToLobby();
       this.elapsedTime = 0;
