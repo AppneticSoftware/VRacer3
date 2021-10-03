@@ -140,19 +140,9 @@ class Game {
     // this.printOnUI(numb.toString());
     const dt = this.clock.getDelta();
     if (this.raceDolly) {
-      if (this.trigger != 0) {
+      if (this.aButton != 0) {
         //Exit game
-        this.printWarnMsg("Exit Game? Y: Tab 'A' - N: Tab 'B'");
-        this.exitGameBtnPressed = true;
-        if (this.elapsedTime === undefined) {
-          this.elapsedTime = 0;
-        }
-        this.elapsedTime += dt;
-        if (this.elapsedTime > 0.3 && this.exitGameBtnPressed == true) {
-          this.main.communication.sendUserExitedGame(this.roomName);
-          this.main.backToLobby();
-          this.elapsedTime = 0;
-        }
+        this.manageExitButtonPressed();
       }
       if (this.bButton != 0) {
         //Start game
@@ -165,21 +155,11 @@ class Game {
       }
       if (this.trigger != 0) {
         //Gas + vorwärts oder rückwärts
-        //this.changeRacerPosZ();
+        this.changeRacerPosZ();
       }
       if (this.stickButton != 0) {
         //Show UI;
-        if (this.elapsedTime === undefined) {
-          this.elapsedTime = 0;
-          this.uiVisible = true;
-        }
-        this.uiVisible = true;
-        this.elapsedTime += dt;
-        if (this.elapsedTime > 0.3) {
-          this.uiVisible = !this.uiVisible;
-          this.elapsedTime = 0;
-        }
-        this.changeVisibilityOfUI(this.uiVisible);
+        this.manageUI_Visibility();
       }
       if (this.xStick != 0) {
         //Link bzw. Rechts
@@ -190,6 +170,34 @@ class Game {
         this.raceDolly.rotation.z = 0;
         //this.raceDolly.rotation.y = 0;
       }
+    }
+  }
+
+  manageUI_Visibility() {
+    if (this.elapsedTime === undefined) {
+      this.elapsedTime = 0;
+      this.uiVisible = true;
+    }
+    this.uiVisible = true;
+    this.elapsedTime += dt;
+    if (this.elapsedTime > 0.3) {
+      this.uiVisible = !this.uiVisible;
+      this.elapsedTime = 0;
+    }
+    this.changeVisibilityOfUI(this.uiVisible);
+  }
+
+  manageExitButtonPressed() {
+    this.printWarnMsg("Exit Game? Y: Tab 'A' - N: Tab 'B'");
+    this.exitGameBtnPressed = true;
+    if (this.elapsedTime === undefined) {
+      this.elapsedTime = 0;
+    }
+    this.elapsedTime += dt;
+    if (this.elapsedTime > 0.3 && this.exitGameBtnPressed == true) {
+      this.main.communication.sendUserExitedGame(this.roomName);
+      this.main.backToLobby();
+      this.elapsedTime = 0;
     }
   }
 
