@@ -175,7 +175,7 @@ class Game {
   }
 
   changeRacerRotationY() {
-    this.raceDolly.rotation.y = this.maxRotationY * this.xStick * this.xStick;
+    this.raceDolly.rotation.y -= this.maxRotationY * this.xStick * this.xStick;
   }
 
   changeRacerPosX() {
