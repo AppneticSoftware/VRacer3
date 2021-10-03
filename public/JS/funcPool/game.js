@@ -130,8 +130,8 @@ class Game {
       if (this.xStick != 0) {
         //Link bzw. Rechts
         this.changeRacerRotationZ();
-        // this.changeRacerRotationY();
-        // this.changeRacerPosX();
+        this.changeRacerRotationY();
+        this.changeRacerPosX();
       } else {
         this.raceDolly.rotation.z = 0;
         //this.raceDolly.rotation.y = 0;
@@ -170,7 +170,7 @@ class Game {
       this.raceDolly.rotation.z > -1 * this.maxRotation
     )
       this.raceDolly.rotation.z =
-        this.raceDolly.rotation.z + this.maxRotation * this.xStick;
+        this.raceDolly.rotation.z + this.maxRotation * this.xStick * 0.1;
   }
 
   changeRacerRotationY() {
