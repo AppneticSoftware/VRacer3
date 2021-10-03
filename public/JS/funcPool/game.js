@@ -125,10 +125,10 @@ class Game {
       }
       if (this.xStick != 0) {
         //Link bzw. Rechts
-        this.changeRacerRotationZ();
+        // this.changeRacerRotationZ();
         this.changeRacerPosY();
       } else {
-        this.raceDolly.rotation.x = 0;
+        // this.raceDolly.rotation.z = 0;
       }
     }
   }
