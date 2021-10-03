@@ -15,6 +15,8 @@ class Game {
       ["Racetrack2.glb", [110, 0, 0], [5, 5, 5]],
     ];
 
+    this.maxSpeed = 2;
+
     this.setupRaceTrackAsset();
   }
 
@@ -104,6 +106,7 @@ class Game {
 
   detectButtonPress() {
     if (this.aButton != 0) {
+      //Exit game
       this.printOnUI("A Button pressed");
     }
     if (this.bButton != 0) {
@@ -113,23 +116,38 @@ class Game {
       this.printOnUI("Thumb Rest pressed");
     }
     if (this.squeeze != 0) {
+      //Bremse
       this.printOnUI("squeeze pressed");
+      this.changeRacerPos();
     }
     if (this.trigger != 0) {
+      //Gas
       this.printOnUI("trigger pressed");
     }
     if (this.stickButton != 0) {
+      //Show UI
       this.printOnUI("Stick Button pressed");
     }
     if (this.xStick != 0) {
+      //Vorwärts bzw. Rückwärts
       this.printOnUI(this.xStick);
     }
     if (this.yStick != 0) {
+      //Link bzw. Rechts
       this.printOnUI(this.yStick);
     }
   }
 
+  changeRacerPos() {
+    console.log(this.raceDolly.position);
+    this.raceDolly.position.x =
+      this.raceDolly.position.x + this.maxSpeed * this.squeeze;
+    console.log(this.raceDolly.position);
+  }
+
   updateGamePos() {
+    //wird in Main aufgerufen
+    //ADD UPDATE FOR OTHER PLAYERS
     this.updateOwnPlayerPos();
   }
 
