@@ -144,7 +144,7 @@ class Game {
     // this.printOnUI(numb.toString());
 
     if (this.raceDolly) {
-      if (this.stickButton != 0) {
+      if (this.aButton != 0) {
         //Exit game
         this.manageExitButtonPressed();
       }
