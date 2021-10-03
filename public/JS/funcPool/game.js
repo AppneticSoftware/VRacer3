@@ -162,11 +162,15 @@ class Game {
       }
       if (this.stickButton != 0) {
         //Show UI;
-        if (this.elapsedTime === undefined) this.elapsedTime = 0;
-        this.elapsedTime += dt;
-        if (this.elapsedTime > 0.8) {
-          this.changeVisibilityOfUI();
+        if (this.elapsedTime === undefined) {
+          this.elapsedTime = 0;
+          this.uiVisible = true;
         }
+        this.elapsedTime += dt;
+        if (this.elapsedTime > 1.5) {
+          this.uiVisible = !this.uiVisible;
+        }
+        this.changeVisibilityOfUI(this.uiVisible);
       }
       if (this.xStick != 0) {
         //Link bzw. Rechts
@@ -232,9 +236,8 @@ class Game {
     }
   }
 
-  changeVisibilityOfUI() {
-    this.uiInstance.uiGameScreen.visible =
-      !this.uiInstance.uiGameScreen.visible;
+  changeVisibilityOfUI(bool) {
+    this.uiInstance.uiGameScreen.visible = bool;
   }
 
   updateGamePos() {
