@@ -16,6 +16,7 @@ class Game {
     ];
 
     this.maxSpeed = 4;
+    this.maxRotation = (60 * Math.PI) / 180;
 
     this.setupRaceTrackAsset();
   }
@@ -109,41 +110,63 @@ class Game {
       //Exit game
       this.printOnUI("A Button pressed");
     }
-    if (this.bButton != 0) {
-      this.printOnUI("B Button pressed");
-    }
-    if (this.thumbRest != 0) {
-      this.printOnUI("Thumb Rest pressed");
-    }
     if (this.squeeze != 0) {
       //Bremse
       this.printOnUI("squeeze pressed");
     }
     if (this.trigger != 0) {
       //Gas
-      this.printOnUI("trigger pressed");
-      this.changeRacerPos();
+      this.changeRacerPosZ();
     }
     if (this.stickButton != 0) {
-      //Show UI
-      this.printOnUI("Stick Button pressed");
+      //Show UI;
       this.changeVisibilityOfUI();
     }
     if (this.xStick != 0) {
-      //Vorwärts bzw. Rückwärts
-      this.printOnUI(this.xStick);
-    }
-    if (this.yStick != 0) {
       //Link bzw. Rechts
-      this.printOnUI(this.yStick);
+      this.changeRacerRotationZ();
+      this.changeRacerPosY();
+    } else {
+      this.raceDolly.rotation.x = 0;
     }
   }
 
-  changeRacerPos() {
-    console.log(this.raceDolly.position);
+  getDrivingDirection() {
+    //this.ystick == minus 1 => vorwärts
+
+    if (this.yStick > 0) {
+      return -1;
+    } else {
+      return 1;
+    }
+  }
+
+  getDrivingRotation() {
+    //this.ystick == minus 1 => vorwärts
+
+    if (this.xStick > 0) {
+      return -1;
+    } else {
+      return 1;
+    }
+  }
+
+  changeRacerPosZ() {
     this.raceDolly.position.z =
-      this.raceDolly.position.z + this.maxSpeed * this.trigger;
-    console.log(this.raceDolly.position);
+      this.raceDolly.position.z +
+      this.maxSpeed * this.trigger * this.getDrivingDirection();
+  }
+
+  changeRacerRotationZ() {
+    this.raceDolly.rotation.z =
+      this.raceDolly.rotation.z +
+      this.maxRotation * this.trigger * this.getDrivingRotation();
+  }
+
+  changeRacerPosY() {
+    this.raceDolly.position.y =
+      this.raceDolly.position.y +
+      this.maxSpeed * this.getDrivingDirection * this.getDrivingRotation();
   }
 
   changeVisibilityOfUI() {
