@@ -18,7 +18,7 @@ class Game {
     this.maxSpeed = 10;
     this.maxTurningSpeed = 4;
     this.maxRotation = 1;
-    this.maxRotationY = (180 * Math.PI) / 180;
+    this.maxRotationY = (18 * Math.PI) / 180;
 
     this.setupRaceTrackAsset();
   }
@@ -175,7 +175,7 @@ class Game {
   }
 
   changeRacerRotationY() {
-    this.raceDolly.rotation.y -= this.maxRotationY * this.xStick * this.xStick;
+    this.raceDolly.rotation.y += this.maxRotationY * this.xStick * this.yStick;
   }
 
   changeRacerPosX() {
