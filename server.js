@@ -91,6 +91,7 @@ function listenToUserExitRoom(socket) {
   socket.on("userExit", function (userId, roomName) {
     socket.leave(roomName);
     removeUserFromRoomAndReturnRoomName(socket.id);
+    sendRoomUserDisconnect(socket, roomName);
     sendRoomsUpdateToAllUsers(socket);
     socketIO.to(roomName).emit("test", "siehste mich ?");
     console.log(userId + " left the game " + roomName);
