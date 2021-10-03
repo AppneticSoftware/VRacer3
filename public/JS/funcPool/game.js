@@ -107,6 +107,7 @@ class Game {
   }
 
   setGameInActive() {
+    console.log(this.main.scene.children);
     this.gameActive = false;
     this.main.setObjectWithName_Invisible(this.gameIdentifier);
     this.removeCameraFromDolly();
@@ -115,10 +116,11 @@ class Game {
 
   setGameActive(roomName) {
     this.gameActive = true;
-    this.printErrorMsg("");
+    this.printWarnMsg("");
     this.roomName = roomName;
     this.main.setObjectWithName_Visible(this.gameIdentifier);
     this.addCameraToDolly();
+    console.log(this.main.scene.children);
   }
 
   updateControllerValues() {
@@ -138,23 +140,28 @@ class Game {
     // this.printOnUI(numb.toString());
     const dt = this.clock.getDelta();
     if (this.raceDolly) {
-      if (this.aButton != 0) {
+      if (this.trigger != 0) {
         //Exit game
-        this.printErrorMsg("Exit Game? Y: Tab 'A' - N: Tab 'B'");
-        if (this.exitGameBtnPressed && this.exitGameBtnPressed == true) {
+        this.printWarnMsg("Exit Game? Y: Tab 'A' - N: Tab 'B'");
+        this.exitGameBtnPressed = true;
+        if (this.elapsedTime === undefined) {
+          this.elapsedTime = 0;
+        }
+        this.elapsedTime += dt;
+        if (this.elapsedTime > 0.3 && this.exitGameBtnPressed == true) {
           this.main.communication.sendUserExitedGame(this.roomName);
           this.main.backToLobby();
+          this.elapsedTime = 0;
         }
-        this.exitGameBtnPressed = true;
       }
       if (this.bButton != 0) {
         //Start game
         this.exitGameBtnPressed = false;
-        this.printErrorMsg("B Button pressed");
+        this.printWarnMsg("B Button pressed");
       }
       if (this.squeeze != 0) {
         //Bremse
-        this.printErrorMsg("squeeze pressed");
+        this.printWarnMsg("squeeze pressed");
       }
       if (this.trigger != 0) {
         //Gas + vorwärts oder rückwärts
@@ -166,9 +173,11 @@ class Game {
           this.elapsedTime = 0;
           this.uiVisible = true;
         }
+        this.uiVisible = true;
         this.elapsedTime += dt;
-        if (this.elapsedTime > 1.5) {
+        if (this.elapsedTime > 0.3) {
           this.uiVisible = !this.uiVisible;
+          this.elapsedTime = 0;
         }
         this.changeVisibilityOfUI(this.uiVisible);
       }
@@ -246,7 +255,7 @@ class Game {
     this.updateOwnPlayerPos();
   }
 
-  printErrorMsg(str) {
+  printWarnMsg(str) {
     this.uiInstance.uiGameScreen.updateElement("errorMsg", str);
     this.uiInstance.uiGameScreen.update();
   }
