@@ -106,6 +106,9 @@ class Game {
   }
 
   detectButtonPress() {
+    const numb = this.raceDolly.position.x;
+
+    this.printOnUI(numb.toString());
     if (this.raceDolly) {
       if (this.aButton != 0) {
         //Exit game
@@ -166,9 +169,11 @@ class Game {
   }
 
   changeRacerPosY() {
-    this.raceDolly.position.y =
-      this.raceDolly.position.y +
+    const numb =
+      this.raceDolly.position.x +
       this.maxSpeed * this.getDrivingDirection * this.getDrivingRotation();
+
+    this.printOnUI(numb.toString());
   }
 
   changeVisibilityOfUI() {
