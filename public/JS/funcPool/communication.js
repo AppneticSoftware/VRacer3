@@ -67,7 +67,7 @@ class Communication {
   listenToRoomUserData(socket) {
     const self = this;
     socket.on("roomUserData", function (roomUserData) {
-      self.main.game.initPlayers(roomUserData, socket.id);
+      self.main.game.initPlayersAndSetupUI(roomUserData, socket.id);
     });
   }
 

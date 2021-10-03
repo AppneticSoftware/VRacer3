@@ -91,7 +91,6 @@ class Main {
   joinGame(callback) {
     this.lobby.setLobbyInactive();
     this.game = new Game(this);
-    this.game.setupGameUI();
     if (typeof callback == "function") callback();
   }
 
@@ -120,6 +119,12 @@ class Main {
   manageGameUI() {
     if (this.game) {
       this.game.getControllerValuesPrinted();
+    }
+  }
+
+  manageGame() {
+    if (this.game) {
+      this.game.updateGamePos();
     }
   }
 
@@ -172,9 +177,9 @@ class Main {
     if (this.renderer.xr.isPresenting) {
       this.manageLobbyUI();
       this.manageControllers();
-      this.manageGameUI();
+      // this.manageGameUI();
+      this.manageGame();
     }
-    // console.log(this.communication.roomsMemberCounterArray);
     this.renderer.render(this.scene, this.camera);
   }
 }

@@ -5,6 +5,7 @@ class Lobby {
   constructor(main) {
     this.lobbyIdentifier = "lobbyScreen";
     this.main = main;
+    this.lobbyActive = true;
 
     this.setupCamera();
     this.setupStadiumAsset();
@@ -54,6 +55,7 @@ class Lobby {
     this.main.setObjectWithName_Invisible(this.lobbyIdentifier);
     this.removeCameraFromDolly();
     this.removeControllerFromDolly();
+    this.lobbyActive = false;
   }
 
   addCameraToDolly() {

@@ -41,9 +41,9 @@ class Game {
   setupGameUI() {
     this.uiInstance = new UI(this);
     this.uiInstance.setupGameUI();
-    //TODO: Ändern
-    // this.cameraDolly.add(this.uiInstance.uiGameScreen.mesh);
-    this.main.addObjectToScene(this.uiInstance.uiGameScreen.mesh);
+    this.gameUIDolly = new THREE.Object3D();
+    this.gameUIDolly.add(this.uiInstance.uiGameScreen.mesh);
+    this.gameUIDolly.position.set(0, 14.5, 2);
   }
 
   //----------------------------------------------------------------
@@ -90,19 +90,63 @@ class Game {
     );
   }
 
-  getControllerValuesPrinted() {
-    let str = JSON.stringify(this.main.controller.buttonStatesRight);
-    str = str + JSON.stringify(this.main.controller.buttonStatesLeft);
-    if (this.strStates === undefined || str != this.strStates) {
-      this.uiInstance.uiGameScreen.updateElement("body", str);
-      this.uiInstance.uiGameScreen.update();
-      this.strStates = str;
+  updateControllerValues() {
+    this.controllerValues = this.main.controller.buttonStatesRight;
+    this.aButton = this.controllerValues.a_button;
+    this.bButton = this.controllerValues.b_button;
+    this.thumbRest = this.controllerValues.thumbrest;
+    this.squeeze = this.controllerValues.xr_standard_squeeze;
+    this.trigger = this.controllerValues.xr_standard_trigger;
+    this.stickButton = this.controllerValues.xr_standard_thumbstick.button;
+    this.xStick = this.controllerValues.xr_standard_thumbstick.xAxis;
+    this.yStick = this.controllerValues.xr_standard_thumbstick.yAxis;
+  }
+
+  detectButtonPress() {
+    if (this.aButton != 0) {
+      this.printOnUI("A Button pressed");
+    }
+    if (this.bButton != 0) {
+      this.printOnUI("B Button pressed");
+    }
+    if (this.thumbRest != 0) {
+      this.printOnUI("Thumb Rest pressed");
+    }
+    if (this.squeeze != 0) {
+      this.printOnUI("squeeze pressed");
+    }
+    if (this.trigger != 0) {
+      this.printOnUI("trigger pressed");
+    }
+    if (this.stickButton != 0) {
+      this.printOnUI("Stick Button pressed");
+    }
+    if (this.xStick != 0) {
+      this.printOnUI(this.xStick);
+    }
+    if (this.yStick != 0) {
+      this.printOnUI(this.yStick);
     }
   }
+
+  updateGamePos() {
+    this.updateOwnPlayerPos();
+  }
+
+  printOnUI(str) {
+    this.uiInstance.uiGameScreen.updateElement("body", str);
+    this.uiInstance.uiGameScreen.update();
+  }
+
   //----------------------------------------------------------------
   //Player Functions
 
-  initPlayers(roomUserData, ownSocketId) {
+  updateOwnPlayerPos() {
+    this.updateControllerValues();
+    this.detectButtonPress();
+  }
+
+  initPlayersAndSetupUI(roomUserData, ownSocketId) {
     this.roomUserData = roomUserData;
     this.userID = ownSocketId;
     this.racerGroup = new THREE.Group();
@@ -124,8 +168,9 @@ class Game {
   }
 
   initOwnPlayerWithCamera(index) {
-    this.setupCamera();
     this.raceDolly = new THREE.Object3D();
+    this.setupCamera();
+    this.setupGameUI();
     this.loadGLTF_ToOtherObject(
       this.assetArray[index][0],
       this.assetArray[index][2],
@@ -137,6 +182,7 @@ class Game {
     this.raceDolly.position.y = posBike.y;
     this.raceDolly.position.z = posBike.z;
     this.raceDolly.add(this.cameraDolly);
+    this.raceDolly.add(this.gameUIDolly);
     this.main.addObjectToScene(this.raceDolly, this.gameIdentifier);
     this.main.exportRenderFunc();
   }

@@ -40,22 +40,6 @@ class Controller {
     this.buttonStatesRight = buttonStates;
   }
 
-  createButtonStatesLeft(components) {
-    const buttonStates = {};
-    this.gamepadIndicesLeft = components;
-
-    Object.keys(components).forEach((key) => {
-      if (key.indexOf("touchpad") != -1 || key.indexOf("thumbstick") != -1) {
-        buttonStates[key] = { button: 0, xAxis: 0, yAxis: 0 };
-      } else {
-        buttonStates[key] = 0;
-      }
-    });
-
-    // was ich nachher exportieren muss
-    this.buttonStatesLeft = buttonStates;
-  }
-
   updateGamepadStateRight() {
     const session = this.main.renderer.xr.getSession();
 
@@ -93,43 +77,6 @@ class Controller {
     }
   }
 
-  updateGamepadStateLeft() {
-    const session = this.main.renderer.xr.getSession();
-
-    const inputSource = session.inputSources[0];
-
-    if (
-      inputSource &&
-      inputSource.gamepad &&
-      this.gamepadIndicesLeft &&
-      this.buttonStatesLeft
-    ) {
-      const gamepad = inputSource.gamepad;
-      try {
-        Object.entries(this.buttonStatesLeft).forEach(([key, value]) => {
-          const buttonIndex = this.gamepadIndicesLeft[key].button;
-          if (
-            key.indexOf("touchpad") != -1 ||
-            key.indexOf("thumbstick") != -1
-          ) {
-            const xAxisIndex = this.gamepadIndicesLeft[key].xAxis;
-            const yAxisIndex = this.gamepadIndicesLeft[key].yAxis;
-            this.buttonStatesLeft[key].button =
-              gamepad.buttons[buttonIndex].value;
-            this.buttonStatesLeft[key].xAxis =
-              gamepad.axes[xAxisIndex].toFixed(2);
-            this.buttonStatesLeft[key].yAxis =
-              gamepad.axes[yAxisIndex].toFixed(2);
-          } else {
-            this.buttonStatesLeft[key] = gamepad.buttons[buttonIndex].value;
-          }
-        });
-      } catch (e) {
-        console.warn(e);
-      }
-    }
-  }
-
   setupControllers() {
     const self = this;
     const controllerModelFactory = new XRControllerModelFactory();
@@ -156,7 +103,6 @@ class Controller {
             info[key] = components;
           });
           self.createButtonStatesRight(info.right);
-          self.createButtonStatesLeft(info.left);
 
           //self.updateControllers(info);
         }
@@ -194,7 +140,6 @@ class Controller {
     }
 
     this.updateGamepadStateRight();
-    this.updateGamepadStateLeft();
   }
 }
 

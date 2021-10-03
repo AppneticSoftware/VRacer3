@@ -184,7 +184,9 @@ class UI {
   //TODO: REFACTOR - NOTWENDIG?
   askToJoinGame(roomName) {
     //func to join room of name "roomName"
-    this.parentClass.main.communication.sendJoinRoomRequest(roomName);
+    if (this.parentClass.lobbyActive == true) {
+      this.parentClass.main.communication.sendJoinRoomRequest(roomName);
+    }
   }
 
   //---------------------------------------------------------------------------------
@@ -196,7 +198,8 @@ class UI {
       body: { type: "text", textAlign: "center" },
     };
     const ui = new CanvasUI({ body: "HELLO EXAMPLE" }, config);
-    ui.mesh.position.set(-40.8, 14.5, -297);
+    // ui.mesh.position.set(-40.8, 14.5, -297);
+    ui.mesh.position.set(0, 0, 0);
     ui.mesh.rotation.y = -(180 * Math.PI) / 180;
     this.uiGameScreen = ui;
   }
