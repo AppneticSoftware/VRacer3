@@ -106,28 +106,30 @@ class Game {
   }
 
   detectButtonPress() {
-    if (this.aButton != 0) {
-      //Exit game
-      this.printOnUI("A Button pressed");
-    }
-    if (this.squeeze != 0) {
-      //Bremse
-      this.printOnUI("squeeze pressed");
-    }
-    if (this.trigger != 0) {
-      //Gas
-      this.changeRacerPosZ();
-    }
-    if (this.stickButton != 0) {
-      //Show UI;
-      this.changeVisibilityOfUI();
-    }
-    if (this.xStick != 0) {
-      //Link bzw. Rechts
-      this.changeRacerRotationZ();
-      this.changeRacerPosY();
-    } else {
-      this.raceDolly.rotation.x = 0;
+    if (this.raceDolly) {
+      if (this.aButton != 0) {
+        //Exit game
+        this.printOnUI("A Button pressed");
+      }
+      if (this.squeeze != 0) {
+        //Bremse
+        this.printOnUI("squeeze pressed");
+      }
+      if (this.trigger != 0) {
+        //Gas
+        this.changeRacerPosZ();
+      }
+      if (this.stickButton != 0) {
+        //Show UI;
+        this.changeVisibilityOfUI();
+      }
+      if (this.xStick != 0) {
+        //Link bzw. Rechts
+        this.changeRacerRotationZ();
+        this.changeRacerPosY();
+      } else {
+        this.raceDolly.rotation.x = 0;
+      }
     }
   }
 
