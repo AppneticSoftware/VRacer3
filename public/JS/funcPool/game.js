@@ -129,7 +129,7 @@ class Game {
       if (this.xStick != 0) {
         //Link bzw. Rechts
         // this.changeRacerRotationZ();
-        this.changeRacerPosY();
+        this.changeRacerPosX();
       } else {
         // this.raceDolly.rotation.z = 0;
       }
@@ -168,10 +168,9 @@ class Game {
       this.maxRotation * this.trigger * this.getDrivingRotation();
   }
 
-  changeRacerPosY() {
+  changeRacerPosX() {
     const numb =
-      this.raceDolly.position.x +
-      this.maxSpeed * this.getDrivingDirection * this.getDrivingRotation();
+      this.raceDolly.position.x + this.maxSpeed * this.getDrivingDirection;
 
     this.printOnUI(numb.toString());
   }

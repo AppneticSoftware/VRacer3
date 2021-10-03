@@ -179,6 +179,8 @@ class Main {
       this.manageControllers();
       // this.manageGameUI();
       this.manageGame();
+    } else if (this.lobby.uiInstance.uiLobbyScreen) {
+      this.lobby.uiInstance.uiLobbyScreen.visible = false;
     }
     this.renderer.render(this.scene, this.camera);
   }
