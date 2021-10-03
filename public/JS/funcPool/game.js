@@ -138,7 +138,7 @@ class Game {
     // this.printOnUI(numb.toString());
     const dt = this.clock.getDelta();
     if (this.raceDolly) {
-      if (this.trigger != 0) {
+      if (this.aButton != 0) {
         //Exit game
         this.printErrorMsg("Exit Game? Y: Tab 'A' - N: Tab 'B'");
         if (this.exitGameBtnPressed && this.exitGameBtnPressed == true) {
