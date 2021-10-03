@@ -193,14 +193,98 @@ class UI {
   //Game UI
 
   setupGameUI() {
-    console.log("UI CREATE");
     const config = {
-      body: { type: "text", textAlign: "center" },
+      header: {
+        type: "text",
+        position: { top: 0 },
+        paddingTop: 30,
+        height: 70,
+        textAlign: "center",
+      },
+      rowOne: {
+        type: "text",
+        position: { top: 70, left: 20 },
+        height: 40,
+        padding: 18,
+        fontSize: 20,
+        textAlign: "center",
+      },
+      rowTwo: {
+        type: "text",
+        position: { top: 120, left: 20 },
+        height: 40,
+        padding: 18,
+        fontSize: 20,
+        textAlign: "center",
+      },
+      rowThree: {
+        type: "text",
+        position: { top: 170, left: 20 },
+        height: 40,
+        padding: 18,
+        fontSize: 20,
+        textAlign: "center",
+      },
+      rowFour: {
+        type: "text",
+        position: { top: 220, left: 20 },
+        height: 40,
+        padding: 18,
+        fontSize: 20,
+        textAlign: "center",
+      },
+      rowFive: {
+        type: "text",
+        position: { top: 270, left: 20 },
+        height: 40,
+        padding: 18,
+        fontSize: 20,
+        textAlign: "center",
+      },
+      startMsg: {
+        type: "text",
+        position: { bottom: 140 },
+        paddingTop: 30,
+        height: 70,
+        fontSize: 19,
+        fontColor: "#25e712",
+        textAlign: "center",
+      },
+      errorMsg: {
+        type: "text",
+        position: { bottom: 70 },
+        paddingTop: 30,
+        height: 70,
+        fontSize: 19,
+        fontColor: "#FF0000",
+        textAlign: "center",
+      },
+      footer: {
+        type: "text",
+        position: { bottom: 0 },
+        paddingTop: 30,
+        height: 70,
+        textAlign: "center",
+        fontSize: 19,
+      },
     };
-    const ui = new CanvasUI({ body: "HELLO EXAMPLE" }, config);
+
+    const content = {
+      header: "Welcome to " + this.parentClass.roomName,
+      rowOne: "Controlls:",
+      rowTwo: "Move forward: Trigger",
+      rowThree: "Break: Squeeze",
+      rowFour: "Steering: Joy-Stick ",
+      rowFive: "Close UI: Press Joy-Stick ",
+      startMsg: "Press 'B' to start the game",
+      errorMsg: "",
+      footer: 'Download "Papermade" - for iOS and Android!',
+    };
+    const ui = new CanvasUI(content, config);
     // ui.mesh.position.set(-40.8, 14.5, -297);
     ui.mesh.position.set(0, 0, 0);
     ui.mesh.rotation.y = -(180 * Math.PI) / 180;
+    ui.mesh.rotation.x = (15 * Math.PI) / 180;
     this.uiGameScreen = ui;
   }
 }

@@ -58,6 +58,13 @@ class Lobby {
     this.lobbyActive = false;
   }
 
+  setLobbyActive() {
+    this.main.setObjectWithName_Visible(this.lobbyIdentifier);
+    this.addCameraToDolly();
+    this.addControllerToDolly();
+    this.lobbyActive = true;
+  }
+
   addCameraToDolly() {
     this.dolly.add(this.main.camera);
   }

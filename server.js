@@ -36,6 +36,7 @@ function IoConnect(server) {
     listenToDisconnect(socket);
     listenToJoinRoom(socket);
     listenToSuccessfullyJoinedRoom(socket);
+    listenToUserExitRoom(socket);
   });
 }
 //-----------------------------------------------------------------------
@@ -61,7 +62,6 @@ function sendNewPlayerJoined(socket, roomName) {
   socketIO.to(roomName).emit("newPlayerJoined", socket.id);
 }
 
-//TODO: EXIT BUTTON FUNCTION - verlässt eigentlich ganzen Server
 function sendRoomUserDisconnect(socket, roomName) {
   console.log(socket.id + " disconnected from room " + roomName);
   socket.to(roomName).emit("userDisconnect", socket.id);
@@ -72,7 +72,7 @@ function sendRoomUserDisconnect(socket, roomName) {
 
 function listenToDisconnect(socket) {
   socket.on("disconnect", function () {
-    console.log(socket.id + " disconnected. ");
+    console.log(socket.id + " disconnected or exited a game. ");
     const roomName = removeUserFromRoomAndReturnRoomName(socket.id);
     sendRoomUserDisconnect(socket, roomName);
     sendRoomsUpdateToAllUsers(socket);
@@ -83,7 +83,17 @@ function listenToJoinRoom(socket) {
   socket.on("joinRoom", function (roomName) {
     console.log(socket.id + " is asking to Join Room: " + roomName);
     const isUserAllowedToJoin = isUserAddableToRoom(socket.id, roomName);
-    sendRoomPermission(socket, isUserAllowedToJoin);
+    sendRoomPermission(socket, isUserAllowedToJoin, roomName);
+  });
+}
+
+function listenToUserExitRoom(socket) {
+  socket.on("userExit", function (userId, roomName) {
+    socket.leave(roomName);
+    removeUserFromRoomAndReturnRoomName(socket.id);
+    sendRoomsUpdateToAllUsers(socket);
+    socketIO.to(roomName).emit("test", "siehste mich ?");
+    console.log(userId + " left the game " + roomName);
   });
 }
 

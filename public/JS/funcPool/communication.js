@@ -13,6 +13,7 @@ class Communication {
     this.listenToRoomUserData(this.socket);
     this.listenToUserDisconnect(this.socket);
     this.listenToNewPlayerJoined(this.socket);
+    this.listenToTest(this.socket);
   }
 
   //-----------------------------------------------------------------------
@@ -26,6 +27,11 @@ class Communication {
     this.socket.emit("joinRoom", roomName);
     //NACHFRAGEN: Warum wird dieses Console Log nicht geprintet?
     // console.log("HALLO FROM EMITSOMETHING");
+  }
+
+  sendUserExitedGame(roomName) {
+    this.socket.emit("userExit", this.socket.id, roomName);
+    console.log("EXIT ");
   }
 
   //-----------------------------------------------------------------------
@@ -88,6 +94,12 @@ class Communication {
         console.log("Player will not be added to scene: " + userID);
       } else {
       }
+    });
+  }
+
+  listenToTest(socket) {
+    socket.on("test", function (msg) {
+      console.log(msg);
     });
   }
   //-----------------------------------------------------------------------

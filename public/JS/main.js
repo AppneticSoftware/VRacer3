@@ -90,8 +90,17 @@ class Main {
 
   joinGame(callback) {
     this.lobby.setLobbyInactive();
-    this.game = new Game(this);
+    if (this.game) {
+      this.game.setGameActive(this.communication.roomName);
+    } else {
+      this.game = new Game(this, this.communication.roomName);
+    }
     if (typeof callback == "function") callback();
+  }
+
+  backToLobby() {
+    this.game.setGameInActive();
+    this.lobby.setLobbyActive();
   }
 
   //----------------------------------------------------------------
@@ -116,14 +125,8 @@ class Main {
     }
   }
 
-  manageGameUI() {
-    if (this.game) {
-      this.game.getControllerValuesPrinted();
-    }
-  }
-
   manageGame() {
-    if (this.game && this.game.raceDolly) {
+    if (this.game && this.game.raceDolly && this.game.gameActive == true) {
       this.game.updateGamePos();
     }
   }
@@ -177,7 +180,6 @@ class Main {
     if (this.renderer.xr.isPresenting) {
       this.manageLobbyUI();
       this.manageControllers();
-      // this.manageGameUI();
       this.manageGame();
     } else if (this.lobby.uiInstance.uiLobbyScreen) {
       this.lobby.uiInstance.uiLobbyScreen.visible = false;

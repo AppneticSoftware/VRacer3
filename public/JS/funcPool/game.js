@@ -3,10 +3,12 @@ import { GLTFLoader } from "../../libs/three/jsm/GLTFLoader.js";
 import { UI } from "./ui.js";
 
 class Game {
-  constructor(main) {
+  constructor(main, roomName) {
     //damit man alle Objekte aus der Scene deaktivieren kann
     this.gameIdentifier = "gameScreen";
     this.main = main;
+    this.roomName = roomName;
+    this.gameActive = true;
     this.assetArray = [
       ["blueBike.glb", [-41, 0, -300], [550, 550, 550]],
       ["greenBike.glb", [-19, 0, -300], [550, 550, 550]],
@@ -40,7 +42,7 @@ class Game {
     this.cameraDolly.position.set(0, 13, 0);
     this.cameraDolly.rotation.x = (15 * Math.PI) / 180;
     this.cameraDolly.rotation.y = -(180 * Math.PI) / 180;
-    this.cameraDolly.add(this.main.camera);
+    this.addCameraToDolly();
   }
 
   setupGameUI() {
@@ -53,6 +55,14 @@ class Game {
 
   //----------------------------------------------------------------
   //Generell Functions
+
+  addCameraToDolly() {
+    this.cameraDolly.add(this.main.camera);
+  }
+
+  removeCameraFromDolly() {
+    this.cameraDolly.remove(this.main.camera);
+  }
 
   getPosVectorOfArray(array) {
     return new THREE.Vector3().fromArray(array);
@@ -95,6 +105,20 @@ class Game {
     );
   }
 
+  setGameInActive() {
+    this.gameActive = false;
+    this.main.setObjectWithName_Invisible(this.gameIdentifier);
+    this.removeCameraFromDolly();
+  }
+
+  setGameActive(roomName) {
+    this.gameActive = true;
+    this.printErrorMsg("");
+    this.roomName = roomName;
+    this.main.setObjectWithName_Visible(this.gameIdentifier);
+    this.addCameraToDolly();
+  }
+
   updateControllerValues() {
     this.controllerValues = this.main.controller.buttonStatesRight;
     this.aButton = this.controllerValues.a_button;
@@ -108,20 +132,30 @@ class Game {
   }
 
   detectButtonPress() {
-    const numb = this.raceDolly.rotation.z;
-    this.printOnUI(numb.toString());
+    // const numb = this.raceDolly.rotation.z;
+    // this.printOnUI(numb.toString());
     if (this.raceDolly) {
       if (this.aButton != 0) {
         //Exit game
-        this.printOnUI("A Button pressed");
+        this.printErrorMsg("Exit Game? Y: Tab 'A' - N: Tab 'B'");
+        if (this.exitGameBtnPressed && this.exitGameBtnPressed == true) {
+          this.main.communication.sendUserExitedGame(this.roomName);
+          this.main.backToLobby();
+        }
+        this.exitGameBtnPressed = true;
+      }
+      if (this.bButton != 0) {
+        //Start game
+        this.exitGameBtnPressed = false;
+        this.printErrorMsg("B Button pressed");
       }
       if (this.squeeze != 0) {
         //Bremse
-        this.printOnUI("squeeze pressed");
+        this.printErrorMsg("squeeze pressed");
       }
       if (this.trigger != 0) {
         //Gas + vorwärts oder rückwärts
-        this.changeRacerPosZ();
+        //this.changeRacerPosZ();
       }
       if (this.stickButton != 0) {
         //Show UI;
@@ -202,8 +236,8 @@ class Game {
     this.updateOwnPlayerPos();
   }
 
-  printOnUI(str) {
-    this.uiInstance.uiGameScreen.updateElement("body", str);
+  printErrorMsg(str) {
+    this.uiInstance.uiGameScreen.updateElement("errorMsg", str);
     this.uiInstance.uiGameScreen.update();
   }
 
