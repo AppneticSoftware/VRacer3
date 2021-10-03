@@ -108,7 +108,7 @@ class Game {
   }
 
   detectButtonPress() {
-    const numb = this.raceDolly.rotation.y;
+    const numb = this.raceDolly.rotation.z;
     this.printOnUI(numb.toString());
     if (this.raceDolly) {
       if (this.aButton != 0) {
