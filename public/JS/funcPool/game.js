@@ -15,7 +15,7 @@ class Game {
       ["Racetrack2.glb", [110, 0, 0], [5, 5, 5]],
     ];
 
-    this.maxSpeed = 10;
+    this.maxSpeed = 20;
     this.maxTurningSpeed = 4;
     this.maxRotation = 0.66;
     this.maxRotationY = (1.8 * Math.PI) / 180;
@@ -161,14 +161,13 @@ class Game {
 
   changeRacerPosZ() {
     this.raceDolly.position.z =
-      this.raceDolly.position.z +
-      this.maxSpeed * this.trigger * this.getDrivingDirection();
+      this.raceDolly.position.z + this.maxSpeed * this.trigger * -1;
   }
 
   changeRacerRotationZ() {
     if (
-      this.raceDolly.rotation.z > this.maxRotation ||
-      this.raceDolly.rotation.z < -1 * this.maxRotation
+      this.raceDolly.rotation.z < this.maxRotation ||
+      this.raceDolly.rotation.z > -1 * this.maxRotation
     )
       this.raceDolly.rotation.z =
         this.raceDolly.rotation.z + this.maxRotation * this.xStick;
