@@ -123,7 +123,7 @@ class Main {
   }
 
   manageGame() {
-    if (this.game) {
+    if (this.game && this.game.raceDolly) {
       this.game.updateGamePos();
     }
   }

@@ -15,7 +15,8 @@ class Game {
       ["Racetrack2.glb", [110, 0, 0], [5, 5, 5]],
     ];
 
-    this.maxSpeed = 4;
+    this.maxSpeed = 10;
+    this.maxTurningSpeed = 4;
     this.maxRotation = (60 * Math.PI) / 180;
 
     this.setupRaceTrackAsset();
@@ -106,7 +107,7 @@ class Game {
   }
 
   detectButtonPress() {
-    const numb = this.raceDolly.position.x;
+    const numb = this.raceDolly.rotation.z;
     this.printOnUI(numb.toString());
     if (this.raceDolly) {
       if (this.aButton != 0) {
@@ -127,7 +128,7 @@ class Game {
       }
       if (this.xStick != 0) {
         //Link bzw. Rechts
-        // this.changeRacerRotationZ();
+        this.changeRacerRotationZ();
         this.changeRacerPosX();
       } else {
         // this.raceDolly.rotation.z = 0;
@@ -162,13 +163,17 @@ class Game {
   }
 
   changeRacerRotationZ() {
-    this.raceDolly.rotation.z =
-      this.raceDolly.rotation.z +
-      this.maxRotation * this.trigger * this.getDrivingRotation();
+    if (
+      this.raceDolly.rotation.z < this.maxRotation ||
+      this.raceDolly.rotation.z > -1 * this.maxRotation
+    )
+      this.raceDolly.rotation.z =
+        this.raceDolly.rotation.z + this.maxRotation * this.xStick * -1;
   }
 
   changeRacerPosX() {
-    const numb = this.raceDolly.position.x + this.maxSpeed * this.xStick * -1;
+    const numb =
+      this.raceDolly.position.x + this.maxTurningSpeed * this.xStick * -1;
     this.raceDolly.position.x = numb;
     this.printOnUI(numb.toString());
   }
