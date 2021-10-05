@@ -263,8 +263,7 @@ class Game {
 
   changeRacerPosX() {
     if (this.trigger != 0) {
-      const numb =
-        this.raceDolly.position.x + this.maxTurningSpeed * this.xStick * -1;
+      const numb = this.maxTurningSpeed * this.xStick * -1;
       // this.raceDolly.position.x = numb;
       this.raceDolly.translateX(numb);
     }
