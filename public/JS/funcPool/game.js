@@ -170,7 +170,7 @@ class Game {
         //Link bzw. Rechts
         this.changeRacerRotationZ();
         this.changeRacerRotationY();
-        this.changeRacerPosX();
+        // this.changeRacerPosX();
       } else {
         this.raceDolly.rotation.z = 0;
         //this.raceDolly.rotation.y = 0;
@@ -256,7 +256,7 @@ class Game {
 
   changeRacerRotationY() {
     if (this.trigger != 0) {
-      this.raceDolly.rotation.y += this.maxRotationY * this.xStick * -1;
+      // this.raceDolly.rotation.y += this.maxRotationY * this.xStick * -1;
       this.raceDolly.rotateY(this.maxRotationY * this.xStick * -1);
     }
   }
