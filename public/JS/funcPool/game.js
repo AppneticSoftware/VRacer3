@@ -168,9 +168,9 @@ class Game {
       }
       if (this.xStick != 0) {
         //Link bzw. Rechts
-        this.changeRacerRotationZ();
-        this.changeRacerRotationY();
-        // this.changeRacerPosX();
+        //this.changeRacerRotationZ();
+        //this.changeRacerRotationY();
+        this.changeRacerPosX();
       } else {
         this.raceDolly.rotation.z = 0;
         //this.raceDolly.rotation.y = 0;
@@ -265,7 +265,8 @@ class Game {
     if (this.trigger != 0) {
       const numb =
         this.raceDolly.position.x + this.maxTurningSpeed * this.xStick * -1;
-      this.raceDolly.position.x = numb;
+      // this.raceDolly.position.x = numb;
+      this.raceDolly.translateX(numb);
     }
   }
 
