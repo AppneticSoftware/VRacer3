@@ -169,7 +169,7 @@ class Game {
       if (this.xStick != 0) {
         //Link bzw. Rechts
         //this.changeRacerRotationZ();
-        //this.changeRacerRotationY();
+        this.changeRacerRotationY();
         this.changeRacerPosX();
       } else {
         this.raceDolly.rotation.z = 0;
