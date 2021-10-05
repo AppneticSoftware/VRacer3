@@ -175,6 +175,14 @@ class Game {
         //this.raceDolly.rotation.z = 0;
         //this.raceDolly.rotation.y = 0;
       }
+      this.printWarnMsg(
+        "x: " +
+          this.raceDolly.position.x +
+          " y: " +
+          this.raceDolly.position.y +
+          " z: " +
+          this.raceDolly.position.z
+      );
     }
   }
 
