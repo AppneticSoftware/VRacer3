@@ -236,9 +236,12 @@ class Game {
   }
 
   changeRacerPosZ() {
-    this.raceDolly.position.z =
-      this.raceDolly.position.z +
-      this.maxSpeed * this.trigger * this.getDrivingDirection();
+    // this.raceDolly.position.z =
+    //   this.raceDolly.position.z +
+    //   this.maxSpeed * this.trigger * this.getDrivingDirection();
+    this.raceDolly.translateZ(
+      this.maxSpeed * this.trigger * this.getDrivingDirection()
+    );
   }
 
   changeRacerRotationZ() {
@@ -254,6 +257,7 @@ class Game {
   changeRacerRotationY() {
     if (this.trigger != 0) {
       this.raceDolly.rotation.y += this.maxRotationY * this.xStick * -1;
+      this.raceDolly.rotateY(this.maxRotationY * this.xStick * -1);
     }
   }
 
