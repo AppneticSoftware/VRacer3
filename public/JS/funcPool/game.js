@@ -247,7 +247,7 @@ class Game {
       }
       if (this.xStick != 0) {
         //Link bzw. Rechts
-        this.changeRacerRotationZ();
+        //this.changeRacerRotationZ();
         this.changeRacerRotationY();
         this.changeRacerPosX();
       } else {
