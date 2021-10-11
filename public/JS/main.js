@@ -15,6 +15,7 @@ class Main {
     this.setupVRButton();
     this.controller = new Controller(this);
     this.lobby = new Lobby(this);
+    this.dt = 1.0 / 60.0;
   }
 
   //----------------------------------------------------------------
@@ -128,6 +129,8 @@ class Main {
   manageGame() {
     if (this.game && this.game.raceDolly && this.game.gameActive == true) {
       this.game.updateGamePos();
+      this.game.world.step(this.dt);
+      this.game.helper.update();
     }
   }
 
