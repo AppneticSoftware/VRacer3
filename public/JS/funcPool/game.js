@@ -221,6 +221,7 @@ class Game {
   detectButtonPress() {
     // const numb = this.raceDolly.rotation.z;
     // this.printOnUI(numb.toString());
+    this.printWarnMsg("");
 
     if (this.raceDolly) {
       if (this.aButton != 0) {
@@ -253,14 +254,14 @@ class Game {
       } else {
         //this.raceDolly.rotation.z = 0;
       }
-      this.printWarnMsg(
-        "x: " +
-          this.raceDolly.position.x +
-          " y: " +
-          this.raceDolly.position.y +
-          " z: " +
-          this.raceDolly.position.z
-      );
+      // this.printWarnMsg(
+      //   "x: " +
+      //     this.raceDolly.position.x +
+      //     " y: " +
+      //     this.raceDolly.position.y +
+      //     " z: " +
+      //     this.raceDolly.position.z
+      // );
       this.playerPhysicsBody.position.set(
         this.raceDolly.position.x,
         5,
@@ -410,6 +411,11 @@ class Game {
 
     this.playerPhysicsBody.position.set(pos[0], 5, pos[2]);
     this.playerPhysicsBody.linearDamping = this.damping;
+    const self = this;
+    this.playerPhysicsBody.addEventListener("collide", function (e) {
+      self.printWarnMsg("collision");
+    });
+
     this.world.add(this.playerPhysicsBody);
 
     this.helper.addVisual(this.playerPhysicsBody);
