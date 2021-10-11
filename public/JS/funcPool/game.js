@@ -266,7 +266,8 @@ class Game {
         5,
         this.raceDolly.position.z
       );
-      this.playerPhysicsBody.rotation.y = this.raceDolly.rotation.y;
+      // console.log(this.playerPhysicsBody.rotation.y);
+      this.playerPhysicsBody.quaternion.copy(this.raceDolly.quaternion);
     }
   }
 
