@@ -11,6 +11,7 @@ class Game {
     this.roomName = roomName;
     this.gameActive = true;
     this.clock = new THREE.Clock();
+    this.collision = false;
     this.assetArray = [
       ["blueBike.glb", [-41, 0, -300], [550, 550, 550]],
       ["greenBike.glb", [-19, 0, -300], [550, 550, 550]],
@@ -85,24 +86,13 @@ class Game {
       -Math.PI / 2
     );
     groundBody.addShape(groundShape);
+    console.log(groundBody.id);
     this.world.add(groundBody);
     //this.helper.addVisual(groundBody, 0xffaa00);
 
     for (let index = 0; index < this.boarderArray.length; index++) {
       this.addBoarder(this.boarderArray[index][0], this.boarderArray[index][1]);
     }
-  }
-
-  addBoarder(pos = [3], size = [3]) {
-    let boarder = new CANNON.Box(new CANNON.Vec3(size[0], size[1], size[2]));
-
-    const body = new CANNON.Body({ mass: 0 });
-    body.addShape(boarder);
-
-    body.position.set(pos[0], pos[1], pos[2]);
-    this.world.add(body);
-
-    this.helper.addVisual(body);
   }
 
   //----------------------------------------------------------------
@@ -137,6 +127,18 @@ class Game {
 
   //----------------------------------------------------------------
   //Generell Functions
+
+  addBoarder(pos = [3], size = [3]) {
+    let boarder = new CANNON.Box(new CANNON.Vec3(size[0], size[1], size[2]));
+
+    const body = new CANNON.Body({ mass: 0 });
+    body.addShape(boarder);
+
+    body.position.set(pos[0], pos[1], pos[2]);
+    this.world.add(body);
+
+    this.helper.addVisual(body);
+  }
 
   addCameraToDolly() {
     this.cameraDolly.add(this.main.camera);
@@ -218,58 +220,72 @@ class Game {
     this.yStick = this.controllerValues.xr_standard_thumbstick.yAxis;
   }
 
-  detectButtonPress() {
-    // const numb = this.raceDolly.rotation.z;
-    // this.printOnUI(numb.toString());
-    this.printWarnMsg("");
-
+  handleUpdatedValuesOfInput() {
     if (this.raceDolly) {
-      if (this.aButton != 0) {
-        //Exit game
-        this.manageExitButtonPressed();
-      }
-      if (this.bButton != 0) {
-        //Start game
-        this.exitGameBtnPressed = false;
-        this.elapsedTimeExit = 0;
-        this.printWarnMsg("B Button pressed");
-      }
-      if (this.squeeze != 0) {
-        //Bremse
-        this.printWarnMsg("squeeze pressed");
-      }
-      if (this.trigger != 0) {
-        //Gas + vorwärts oder rückwärts
-        this.changeRacerPosZ();
-      }
-      if (this.stickButton != 0) {
-        //Show UI;
-        this.manageUI_Visibility();
-      }
-      if (this.xStick != 0) {
-        //Link bzw. Rechts
-        //this.changeRacerRotationZ();
-        this.changeRacerRotationY();
-        this.changeRacerPosX();
+      if (this.collision == false) {
+        this.checkInputChange();
+        this.updatePhysicBodyPos();
+        this.saveLastValidPos();
       } else {
-        //this.raceDolly.rotation.z = 0;
+        console.log("reset pos");
+        this.resetToValidPos();
       }
-      // this.printWarnMsg(
-      //   "x: " +
-      //     this.raceDolly.position.x +
-      //     " y: " +
-      //     this.raceDolly.position.y +
-      //     " z: " +
-      //     this.raceDolly.position.z
-      // );
-      this.playerPhysicsBody.position.set(
-        this.raceDolly.position.x,
-        5,
-        this.raceDolly.position.z
-      );
-      // console.log(this.playerPhysicsBody.rotation.y);
-      this.playerPhysicsBody.quaternion.copy(this.raceDolly.quaternion);
     }
+  }
+
+  checkInputChange() {
+    if (this.aButton != 0) {
+      //Exit game
+      this.manageExitButtonPressed();
+    }
+    if (this.bButton != 0) {
+      //Start game
+      this.exitGameBtnPressed = false;
+      this.elapsedTimeExit = 0;
+      // this.printWarnMsg("B Button pressed");
+    }
+    if (this.squeeze != 0) {
+      //Bremse
+      // this.printWarnMsg("squeeze pressed");
+    }
+    if (this.trigger != 0) {
+      //Gas + vorwärts oder rückwärts
+      this.changeRacerPosZ();
+    }
+    if (this.stickButton != 0) {
+      //Show UI;
+      this.manageUI_Visibility();
+    }
+    if (this.xStick != 0) {
+      //Link bzw. Rechts
+      this.changeRacerRotationZ();
+      this.changeRacerRotationY();
+      this.changeRacerPosX();
+    } else {
+      this.raceDolly.rotation.z = 0;
+    }
+  }
+
+  updatePhysicBodyPos() {
+    this.playerPhysicsBody.position.set(
+      this.raceDolly.position.x,
+      5,
+      this.raceDolly.position.z
+    );
+    this.playerPhysicsBody.quaternion.copy(this.raceDolly.quaternion);
+  }
+
+  saveLastValidPos() {
+    this.validPos = this.raceDolly.position;
+    this.validQuaternion = this.raceDolly.quaternion;
+  }
+
+  resetToValidPos() {
+    this.playerPhysicsBody.position.set(this.validPos.x, 5, this.validPos.z);
+    this.playerPhysicsBody.quaternion.copy(this.validQuaternion);
+    this.raceDolly.position.set(this.validPos.x, 0, this.validPos.z);
+    this.raceDolly.quaternion.copy(this.validQuaternion);
+    this.collision = false;
   }
 
   manageUI_Visibility() {
@@ -340,9 +356,9 @@ class Game {
       this.raceDolly.rotation.z < this.maxRotation &&
       this.raceDolly.rotation.z > -1 * this.maxRotation &&
       this.trigger != 0
-    )
-      this.raceDolly.rotation.z =
-        this.raceDolly.rotation.z + this.maxRotation * this.xStick * 0.1;
+    ) {
+      this.raceDolly.rotateZ(this.maxRotation * this.xStick * 0.1);
+    }
   }
 
   changeRacerRotationY() {
@@ -378,7 +394,7 @@ class Game {
 
   updateOwnPlayerPos() {
     this.updateControllerValues();
-    this.detectButtonPress();
+    this.handleUpdatedValuesOfInput();
   }
 
   initPlayersAndSetupUI(roomUserData, ownSocketId) {
@@ -413,12 +429,18 @@ class Game {
     this.playerPhysicsBody.linearDamping = this.damping;
     const self = this;
     this.playerPhysicsBody.addEventListener("collide", function (e) {
-      self.printWarnMsg("collision");
+      self.handleCollision(e);
     });
 
     this.world.add(this.playerPhysicsBody);
-
     this.helper.addVisual(this.playerPhysicsBody);
+  }
+
+  handleCollision(e) {
+    if (e.body.id != 0) {
+      this.collision = true;
+    }
+    // console.log(e);
   }
 
   initOwnPlayerWithCamera(index, socketId) {
@@ -438,6 +460,7 @@ class Game {
     this.raceDolly.add(this.cameraDolly);
     this.raceDolly.add(this.gameUIDolly);
     this.initPhysicBodyOfOwnPlayer(this.assetArray[index][1]);
+    this.saveLastValidPos();
     this.main.addObjectToScene(this.raceDolly, this.gameIdentifier);
     this.main.exportRenderFunc();
   }
