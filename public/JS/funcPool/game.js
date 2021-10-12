@@ -226,8 +226,9 @@ class Game {
         this.checkInputChange();
         this.updatePhysicBodyPos();
         this.saveLastValidPos();
+        this.printWarnMsg("No Collision");
       } else {
-        console.log("reset pos");
+        this.printWarnMsg("Collision");
         this.resetToValidPos();
       }
     }
