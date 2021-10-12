@@ -243,11 +243,6 @@ class Game {
       //Start game
       this.exitGameBtnPressed = false;
       this.elapsedTimeExit = 0;
-      // this.printWarnMsg("B Button pressed");
-    }
-    if (this.squeeze != 0) {
-      //Bremse
-      // this.printWarnMsg("squeeze pressed");
     }
     if (this.trigger != 0) {
       //Gas + vorwärts oder rückwärts
@@ -259,11 +254,8 @@ class Game {
     }
     if (this.xStick != 0) {
       //Link bzw. Rechts
-      this.changeRacerRotationZ();
       this.changeRacerRotationY();
       this.changeRacerPosX();
-    } else {
-      this.raceDolly.rotation.z = 0;
     }
   }
 
