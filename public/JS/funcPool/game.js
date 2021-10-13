@@ -336,7 +336,7 @@ class Game {
 
   isCollidingX() {
     const pos = this.raceDolly.position.clone();
-    pos.y += 18;
+    pos.y += 6;
     let dir = new THREE.Vector3();
     this.raceDolly.getWorldDirection(dir);
     if (this.isSteeringRight()) {
@@ -345,19 +345,20 @@ class Game {
       dir.set(-1, 0, 0);
     }
 
-    dir.applyMatrix4(this.player.object.matrix);
+    dir.applyMatrix4(this.raceDolly.matrix);
     dir.normalize();
     raycaster = new THREE.Raycaster(pos, dir);
 
     intersect = raycaster.intersectObjects(colliders);
     if (intersect.length > 0) {
-      if (intersect[0].distance < 50) {
+      if (intersect[0].distance < 6) {
         return true;
       } else {
         return false;
       }
     }
   }
+
   changeRacerPosX() {
     if (this.trigger != 0 && this.isCollidingX() == false) {
       const numb = this.maxTurningSpeed * this.xStick * -1;
