@@ -276,9 +276,9 @@ class Game {
 
   isSteeringRight() {
     if (this.xStick >= 0) {
-      return true;
-    } else {
       return false;
+    } else {
+      return true;
     }
   }
 
