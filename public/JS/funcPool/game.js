@@ -57,7 +57,7 @@ class Game {
       ],
     ];
 
-    this.maxSpeed = 4; //20
+    this.maxSpeed = 20;
     this.maxTurningSpeed = 4;
     this.maxRotation = 0.66;
     this.maxRotationY = (1.8 * Math.PI) / 180;
@@ -222,14 +222,7 @@ class Game {
       //Show UI;
       this.manageUI_Visibility();
     }
-    // if (this.xStick != 0) {
-    //   //Link bzw. Rechts
-    //   this.printWarnMsg("X Called");
-
-    //   this.changeRacerRotationY();
-    //   this.changeRacerPosX();
-    // }
-    if (this.stickButton != 0) {
+    if (this.xStick != 0) {
       //Link bzw. Rechts
       this.printWarnMsg("X Called");
 
@@ -282,7 +275,7 @@ class Game {
   }
 
   isSteeringRight() {
-    if (this.stickButton >= 0) {
+    if (this.xStick >= 0) {
       return true;
     } else {
       return false;
