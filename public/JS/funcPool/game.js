@@ -268,9 +268,9 @@ class Game {
 
   getDrivingDirection() {
     if (this.yStick >= 0) {
-      return 1;
-    } else {
       return -1;
+    } else {
+      return 1;
     }
   }
 
