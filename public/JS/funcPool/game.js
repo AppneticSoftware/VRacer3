@@ -224,6 +224,8 @@ class Game {
     }
     if (this.xStick != 0) {
       //Link bzw. Rechts
+      this.printWarnMsg("X Called");
+
       this.changeRacerRotationY();
       this.changeRacerPosX();
     }
@@ -366,6 +368,8 @@ class Game {
   }
 
   changeRacerPosX() {
+    this.printWarnMsg("changeRacerPosX");
+
     if (this.trigger != 0 && this.isCollidingX() == false) {
       const numb = this.maxTurningSpeed * this.xStick * -1;
       this.raceDolly.translateX(numb);
