@@ -57,7 +57,7 @@ class Game {
       ],
     ];
 
-    this.maxSpeed = 20;
+    this.maxSpeed = 4; //20
     this.maxTurningSpeed = 4;
     this.maxRotation = 0.66;
     this.maxRotationY = (1.8 * Math.PI) / 180;
@@ -222,7 +222,14 @@ class Game {
       //Show UI;
       this.manageUI_Visibility();
     }
-    if (this.xStick != 0) {
+    // if (this.xStick != 0) {
+    //   //Link bzw. Rechts
+    //   this.printWarnMsg("X Called");
+
+    //   this.changeRacerRotationY();
+    //   this.changeRacerPosX();
+    // }
+    if (this.stickButton != 0) {
       //Link bzw. Rechts
       this.printWarnMsg("X Called");
 
@@ -275,7 +282,7 @@ class Game {
   }
 
   isSteeringRight() {
-    if (this.xStick >= 0) {
+    if (this.stickButton >= 0) {
       return true;
     } else {
       return false;
@@ -351,9 +358,10 @@ class Game {
 
     dir.applyMatrix4(this.raceDolly.matrix);
     dir.normalize();
-    raycaster = new THREE.Raycaster(pos, dir);
+    let raycaster = new THREE.Raycaster(pos, dir);
 
-    intersect = raycaster.intersectObjects(colliders);
+    const colliders = this.colliders;
+    const intersect = raycaster.intersectObjects(colliders);
     if (intersect.length > 0) {
       if (intersect[0].distance < 6) {
         this.printWarnMsg("true ISCOLLIDING");
