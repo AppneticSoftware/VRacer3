@@ -1,7 +1,6 @@
 import * as THREE from "../../libs/three/three.module.js";
 import { GLTFLoader } from "../../libs/three/jsm/GLTFLoader.js";
 import { UI } from "./ui.js";
-import { CannonHelper } from "../../libs/CannonHelper.js";
 
 class Game {
   constructor(main, roomName) {
@@ -64,35 +63,7 @@ class Game {
     this.maxRotationY = (1.8 * Math.PI) / 180;
 
     this.setupRaceTrackAsset();
-    this.initPhysics();
-  }
-
-  initPhysics() {
-    this.world = new CANNON.World();
-
-    this.dt = 1.0 / 60.0;
-    this.damping = 0.01;
-
-    this.world.broadphase = new CANNON.NaiveBroadphase();
-    this.world.gravity.set(0, -10, 0);
-
-    this.helper = new CannonHelper(this.main.scene, this.world);
-
-    const groundShape = new CANNON.Plane();
-    //const groundMaterial = new CANNON.Material();
-    const groundBody = new CANNON.Body({ mass: 0 }); //, material: groundMaterial });
-    groundBody.quaternion.setFromAxisAngle(
-      new CANNON.Vec3(1, 0, 0),
-      -Math.PI / 2
-    );
-    groundBody.addShape(groundShape);
-    console.log(groundBody.id);
-    this.world.add(groundBody);
-    //this.helper.addVisual(groundBody, 0xffaa00);
-
-    for (let index = 0; index < this.boarderArray.length; index++) {
-      this.addBoarder(this.boarderArray[index][0], this.boarderArray[index][1]);
-    }
+    this.createColliders();
   }
 
   //----------------------------------------------------------------
@@ -129,15 +100,22 @@ class Game {
   //Generell Functions
 
   addBoarder(pos = [3], size = [3]) {
-    let boarder = new CANNON.Box(new CANNON.Vec3(size[0], size[1], size[2]));
+    const geometry = new THREE.BoxGeometry(size[0], size[1], size[2]);
+    const material = new THREE.MeshBasicMaterial({
+      visible: true,
+    });
 
-    const body = new CANNON.Body({ mass: 0 });
-    body.addShape(boarder);
+    const box = new THREE.Mesh(geometry, material);
+    box.position.set(pos[0], pos[1] / 2, pos[2]);
+    this.main.addObjectToScene(box, this.gameIdentifier);
+    this.colliders.push(box);
+  }
 
-    body.position.set(pos[0], pos[1], pos[2]);
-    this.world.add(body);
-
-    this.helper.addVisual(body);
+  createColliders() {
+    this.colliders = [];
+    for (let index = 0; index < this.boarderArray.length; index++) {
+      this.addBoarder(this.boarderArray[index][0], this.boarderArray[index][1]);
+    }
   }
 
   addCameraToDolly() {
@@ -222,15 +200,7 @@ class Game {
 
   handleUpdatedValuesOfInput() {
     if (this.raceDolly) {
-      if (this.collision == false) {
-        this.checkInputChange();
-        this.updatePhysicBodyPos();
-        this.saveLastValidPos();
-        this.printWarnMsg("No Collision");
-      } else {
-        this.printWarnMsg("Collision");
-        this.resetToValidPos();
-      }
+      this.checkInputChange();
     }
   }
 
@@ -257,28 +227,6 @@ class Game {
       this.changeRacerRotationY();
       this.changeRacerPosX();
     }
-  }
-
-  updatePhysicBodyPos() {
-    this.playerPhysicsBody.position.set(
-      this.raceDolly.position.x,
-      5,
-      this.raceDolly.position.z
-    );
-    this.playerPhysicsBody.quaternion.copy(this.raceDolly.quaternion);
-  }
-
-  saveLastValidPos() {
-    this.validPos = this.raceDolly.position;
-    this.validQuaternion = this.raceDolly.quaternion;
-  }
-
-  resetToValidPos() {
-    this.playerPhysicsBody.position.set(this.validPos.x, 5, this.validPos.z);
-    this.playerPhysicsBody.quaternion.copy(this.validQuaternion);
-    this.raceDolly.position.set(this.validPos.x, 0, this.validPos.z);
-    this.raceDolly.quaternion.copy(this.validQuaternion);
-    this.collision = false;
   }
 
   manageUI_Visibility() {
@@ -411,24 +359,6 @@ class Game {
     this.main.addObjectToScene(this.racerGroup, this.gameIdentifier);
   }
 
-  initPhysicBodyOfOwnPlayer(pos = [3]) {
-    let shape = new CANNON.Box(new CANNON.Vec3(5, 5, 15));
-
-    const material = new CANNON.Material();
-    this.playerPhysicsBody = new CANNON.Body({ mass: 100, material: material });
-    this.playerPhysicsBody.addShape(shape);
-
-    this.playerPhysicsBody.position.set(pos[0], 5, pos[2]);
-    this.playerPhysicsBody.linearDamping = this.damping;
-    const self = this;
-    this.playerPhysicsBody.addEventListener("collide", function (e) {
-      self.handleCollision(e);
-    });
-
-    this.world.add(this.playerPhysicsBody);
-    this.helper.addVisual(this.playerPhysicsBody);
-  }
-
   handleCollision(e) {
     if (e.body.id != 0) {
       this.collision = true;
@@ -452,8 +382,6 @@ class Game {
     this.raceDolly.position.z = posBike.z;
     this.raceDolly.add(this.cameraDolly);
     this.raceDolly.add(this.gameUIDolly);
-    this.initPhysicBodyOfOwnPlayer(this.assetArray[index][1]);
-    this.saveLastValidPos();
     this.main.addObjectToScene(this.raceDolly, this.gameIdentifier);
     this.main.exportRenderFunc();
   }

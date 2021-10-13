@@ -129,8 +129,6 @@ class Main {
   manageGame() {
     if (this.game && this.game.raceDolly && this.game.gameActive == true) {
       this.game.updateGamePos();
-      this.game.world.step(this.dt);
-      this.game.helper.update();
     }
   }
 
