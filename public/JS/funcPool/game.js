@@ -22,7 +22,7 @@ class Game {
       [
         //links
         [35, 0, 0],
-        [1, 50, 1000],
+        [1, 50, 2000],
       ],
       [
         //vorne
@@ -37,23 +37,23 @@ class Game {
       [
         //rechts
         [-455, 0, 0],
-        [1, 50, 1000],
+        [1, 50, 2000],
       ],
       [
         //mitte
         [-210, 0, 105],
-        [150, 50, 420],
+        [300, 50, 820],
       ],
       [
         //mitte-unten
         [-60, 0, -75],
-        [1, 50, 500],
+        [1, 50, 1000],
       ],
 
       [
         //mitte-unten-rechts
         [-330, 0, -640],
-        [160, 50, 200],
+        [320, 50, 400],
       ],
     ];
 
@@ -91,7 +91,7 @@ class Game {
       this.uiInstance = new UI(this);
       this.uiInstance.setupGameUI();
       this.gameUIDolly = new THREE.Object3D();
-      this.gameUIDolly.add(this.uiInstance.uiGameScreen.mesh);
+      //this.gameUIDolly.add(this.uiInstance.uiGameScreen.mesh);
       this.gameUIDolly.position.set(0, 14.5, 2);
     }
   }
@@ -237,7 +237,7 @@ class Game {
     }
     this.uiVisible = true;
     this.elapsedTimeUI += dt;
-    if (this.elapsedTimeUI > 0.6) {
+    if (this.elapsedTimeUI > 0.9) {
       this.uiVisible = !this.uiVisible;
       this.elapsedTimeUI = 0;
     }
@@ -265,14 +265,18 @@ class Game {
   }
 
   getDrivingDirection() {
-    if (this.yStick > 0) {
+    if (this.yStick >= 0) {
       return 1;
     } else {
-      if (this.trigger == 0) {
-        return -1;
-      } else {
-        return 1;
-      }
+      return -1;
+    }
+  }
+
+  isSteeringRight() {
+    if (this.xStick >= 0) {
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -286,10 +290,32 @@ class Game {
     }
   }
 
+  isCollidingZ() {
+    const pos = this.raceDolly.position.clone();
+    pos.y += 18;
+    let dir = new THREE.Vector3();
+    this.raceDolly.getWorldDirection(dir);
+    if (this.getDrivingDirection() < 0) dir.negate();
+    let raycaster = new THREE.Raycaster(pos, dir);
+    const colliders = this.colliders;
+    if (colliders !== undefined) {
+      const intersect = raycaster.intersectObjects(colliders);
+      if (intersect.length > 0) {
+        if (intersect[0].distance < 15) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+  }
+
   changeRacerPosZ() {
-    this.raceDolly.translateZ(
-      this.maxSpeed * this.trigger * this.getDrivingDirection()
-    );
+    if (this.isCollidingZ() == false) {
+      this.raceDolly.translateZ(
+        this.maxSpeed * this.trigger * this.getDrivingDirection()
+      );
+    }
   }
 
   changeRacerRotationZ() {
@@ -308,8 +334,32 @@ class Game {
     }
   }
 
+  isCollidingX() {
+    const pos = this.raceDolly.position.clone();
+    pos.y += 18;
+    let dir = new THREE.Vector3();
+    this.raceDolly.getWorldDirection(dir);
+    if (this.isSteeringRight()) {
+      dir.set(1, 0, 0);
+    } else {
+      dir.set(-1, 0, 0);
+    }
+
+    dir.applyMatrix4(this.player.object.matrix);
+    dir.normalize();
+    raycaster = new THREE.Raycaster(pos, dir);
+
+    intersect = raycaster.intersectObjects(colliders);
+    if (intersect.length > 0) {
+      if (intersect[0].distance < 50) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
   changeRacerPosX() {
-    if (this.trigger != 0) {
+    if (this.trigger != 0 && this.isCollidingX() == false) {
       const numb = this.maxTurningSpeed * this.xStick * -1;
       this.raceDolly.translateX(numb);
     }
