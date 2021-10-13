@@ -91,7 +91,7 @@ class Game {
       this.uiInstance = new UI(this);
       this.uiInstance.setupGameUI();
       this.gameUIDolly = new THREE.Object3D();
-      //this.gameUIDolly.add(this.uiInstance.uiGameScreen.mesh);
+      this.gameUIDolly.add(this.uiInstance.uiGameScreen.mesh);
       this.gameUIDolly.position.set(0, 14.5, 2);
     }
   }
@@ -335,6 +335,7 @@ class Game {
   }
 
   isCollidingX() {
+    this.printWarnMsg("ENTER ISCOLLIDING");
     const pos = this.raceDolly.position.clone();
     pos.y += 6;
     let dir = new THREE.Vector3();
@@ -344,6 +345,7 @@ class Game {
     } else {
       dir.set(-1, 0, 0);
     }
+    this.printWarnMsg("Middle ISCOLLIDING");
 
     dir.applyMatrix4(this.raceDolly.matrix);
     dir.normalize();
@@ -352,8 +354,12 @@ class Game {
     intersect = raycaster.intersectObjects(colliders);
     if (intersect.length > 0) {
       if (intersect[0].distance < 6) {
+        this.printWarnMsg("true ISCOLLIDING");
+
         return true;
       } else {
+        this.printWarnMsg("false ISCOLLIDING");
+
         return false;
       }
     }
