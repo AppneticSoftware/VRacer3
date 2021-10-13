@@ -267,7 +267,7 @@ class Game {
   }
 
   getDrivingDirection() {
-    if (this.yStick >= 0) {
+    if (this.yStick > 0) {
       return -1;
     } else {
       return 1;
@@ -339,7 +339,7 @@ class Game {
   isCollidingX() {
     this.printWarnMsg("ENTER ISCOLLIDING");
     const pos = this.raceDolly.position.clone();
-    pos.y += 6;
+    pos.y += 18;
     let dir = new THREE.Vector3();
     this.raceDolly.getWorldDirection(dir);
     if (this.isSteeringRight()) {
@@ -356,7 +356,7 @@ class Game {
     const colliders = this.colliders;
     const intersect = raycaster.intersectObjects(colliders);
     if (intersect.length > 0) {
-      if (intersect[0].distance < 6) {
+      if (intersect[0].distance < 15) {
         this.printWarnMsg("true ISCOLLIDING");
 
         return true;
