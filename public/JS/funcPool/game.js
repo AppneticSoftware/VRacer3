@@ -231,17 +231,16 @@ class Game {
       this.changeRacerPosX();
     } else {
       this.raceDolly.children[0].rotation.z = 0;
-      this.raceDolly.children[1].rotation.z = 0;
+      this.raceDolly.children[2].rotation.z = 0;
       this.raceDolly.position.y = 0;
     }
   }
 
   manageUI_Visibility() {
     const dt = this.clock.getDelta();
-    // if (this.elapsedTimeUI === undefined) {
-    //   this.elapsedTimeUI = 0;
-    //   this.uiVisible = true;
-    // }
+    if (this.elapsedTimeUI === undefined) {
+      this.elapsedTimeUI = 0;
+    }
     this.elapsedTimeUI += dt;
     if (this.elapsedTimeUI > 0.9) {
       this.uiVisible = !this.uiVisible;
@@ -329,7 +328,7 @@ class Game {
       this.raceDolly.children[0].rotation.z > -0.66
     ) {
       this.raceDolly.children[0].rotation.z += this.maxRotation * this.xStick;
-      this.raceDolly.children[1].rotation.z += this.maxRotation * this.xStick;
+      this.raceDolly.children[2].rotation.z += this.maxRotation * this.xStick;
     }
     this.raceDolly.position.y = 0;
   }
