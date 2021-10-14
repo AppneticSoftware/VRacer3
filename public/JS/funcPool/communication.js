@@ -13,6 +13,8 @@ class Communication {
     this.listenToRoomUserData(this.socket);
     this.listenToUserDisconnect(this.socket);
     this.listenToNewPlayerJoined(this.socket);
+    this.listenToUpdateOfPlayerPos(this.socket);
+
     this.listenToTest(this.socket);
   }
 
@@ -32,6 +34,16 @@ class Communication {
   sendUserExitedGame(roomName) {
     this.socket.emit("userExit", this.socket.id, roomName);
     console.log("EXIT ");
+  }
+
+  sendPositionOfOwnPlayer(pos, quad) {
+    this.socket.emit(
+      "positionOfUser",
+      this.socket.id,
+      this.roomName,
+      pos,
+      quad
+    );
   }
 
   //-----------------------------------------------------------------------
@@ -91,6 +103,15 @@ class Communication {
       if (self.socket.id != userID) {
         console.log("Add new Player to Scene: " + userID);
         self.main.game.addNewPlayerToScene(userID);
+      }
+    });
+  }
+
+  listenToUpdateOfPlayerPos(socket) {
+    const self = this;
+    socket.on("updatePosOfOtherUsers", function (userId, pos, quad) {
+      if (self.socket.id != userId) {
+        self.main.game.updateOtherPlayersPosition(userId, pos, quad);
       }
     });
   }

@@ -37,6 +37,7 @@ function IoConnect(server) {
     listenToJoinRoom(socket);
     listenToSuccessfullyJoinedRoom(socket);
     listenToUserExitRoom(socket);
+    listenToPlayerPosUpdate(socket);
   });
 }
 //-----------------------------------------------------------------------
@@ -65,6 +66,10 @@ function sendNewPlayerJoined(socket, roomName) {
 function sendRoomUserDisconnect(socket, roomName) {
   console.log(socket.id + " disconnected from room " + roomName);
   socket.to(roomName).emit("userDisconnect", socket.id);
+}
+
+function sendPosOfPlayer(userId, roomName, pos, quad) {
+  socketIO.to(roomName).emit("updatePosOfOtherUsers", userId, pos, quad);
 }
 
 //-----------------------------------------------------------------------
@@ -108,6 +113,12 @@ function listenToSuccessfullyJoinedRoom(socket) {
       sendUserDataFromRoom(socket, roomName); //nur an gejointen User
       sendNewPlayerJoined(socket, roomName); //an Alle
     } else console.log(socket.id + " didnt joined the room.");
+  });
+}
+
+function listenToPlayerPosUpdate(socket) {
+  socket.on("positionOfUser", function (userId, roomName, pos, quad) {
+    sendPosOfPlayer(userId, roomName, pos, quad);
   });
 }
 

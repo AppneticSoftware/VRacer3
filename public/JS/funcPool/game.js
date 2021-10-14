@@ -57,7 +57,7 @@ class Game {
       ],
     ];
 
-    this.uiVisible = true;
+    this.uiVisible = false;
 
     this.maxSpeed = 15;
     this.maxTurningSpeed = 4;
@@ -94,6 +94,7 @@ class Game {
       this.uiInstance.setupGameUI();
       this.gameUIDolly = new THREE.Object3D();
       this.gameUIDolly.add(this.uiInstance.uiGameScreen.mesh);
+      this.changeVisibilityOfUI(this.uiVisible);
       this.gameUIDolly.position.set(0, 14.5, 2);
     }
   }
@@ -378,6 +379,10 @@ class Game {
     //wird in Main aufgerufen
     //ADD UPDATE FOR OTHER PLAYERS
     this.updateOwnPlayerPos();
+    this.main.communication.sendPositionOfOwnPlayer(
+      this.raceDolly.position,
+      this.raceDolly.quaternion
+    );
   }
 
   printWarnMsg(str) {
@@ -419,6 +424,18 @@ class Game {
       this.collision = true;
     }
     // console.log(e);
+  }
+
+  updateOtherPlayersPosition(userID, pos, quad) {
+    const sceneChildren = this.main.scene.children;
+    for (let index = 0; index < sceneChildren.length; index++) {
+      if (sceneChildren[index].name == userID) {
+        this.main.scene.children[index].position.set(pos.x, pos.y, pos.z);
+        // this.main.scene.children[index].quaternion.copy(quad);
+        // console.log(quad);
+        break;
+      }
+    }
   }
 
   initOwnPlayerWithCamera(index, socketId) {
@@ -480,7 +497,7 @@ class Game {
 
   addNewPlayerToScene(userID) {
     if (this.isPlayerAlreadyInScene(userID) == false) {
-      console.log(userID + " is not already in the game.");
+      console.log(userID + " is joining the game.");
       const newPlayerIndex = this.getFreeIndex();
 
       this.addNewPlayerToRacerGroup(newPlayerIndex, userID);
