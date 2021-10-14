@@ -57,6 +57,8 @@ class Game {
       ],
     ];
 
+    this.uiVisible = true;
+
     this.maxSpeed = 15;
     this.maxTurningSpeed = 4;
     this.maxRotation = 0.5;
@@ -205,7 +207,6 @@ class Game {
   }
 
   checkInputChange() {
-    console.log(this.raceDolly.children);
     if (this.aButton != 0) {
       //Exit game
       this.manageExitButtonPressed();
@@ -228,23 +229,21 @@ class Game {
       this.changeRacerRotationZ();
       this.changeRacerRotationY();
       this.changeRacerPosX();
-    } else if (this.raceDolly.children[2]) {
+    } else {
       this.raceDolly.children[0].rotation.z = 0;
       this.raceDolly.children[1].rotation.z = 0;
-      this.raceDolly.children[2].children[2].rotation.z = 0;
       this.raceDolly.position.y = 0;
     }
   }
 
   manageUI_Visibility() {
     const dt = this.clock.getDelta();
-    if (this.elapsedTimeUI === undefined) {
-      this.elapsedTimeUI = 0;
-      this.uiVisible = true;
-    }
-    this.uiVisible = true;
+    // if (this.elapsedTimeUI === undefined) {
+    //   this.elapsedTimeUI = 0;
+    //   this.uiVisible = true;
+    // }
     this.elapsedTimeUI += dt;
-    if (this.elapsedTimeUI > 1.2) {
+    if (this.elapsedTimeUI > 0.9) {
       this.uiVisible = !this.uiVisible;
       this.elapsedTimeUI = 0;
     }
@@ -331,8 +330,6 @@ class Game {
     ) {
       this.raceDolly.children[0].rotation.z += this.maxRotation * this.xStick;
       this.raceDolly.children[1].rotation.z += this.maxRotation * this.xStick;
-      this.raceDolly.children[2].children[2].rotation.y +=
-        this.maxRotation * this.xStick;
     }
     this.raceDolly.position.y = 0;
   }
