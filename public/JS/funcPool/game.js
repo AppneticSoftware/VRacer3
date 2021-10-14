@@ -61,7 +61,7 @@ class Game {
 
     this.maxSpeed = 15;
     this.maxTurningSpeed = 4;
-    this.maxRotation = 0.5;
+    this.maxRotation = 0.2;
     this.maxRotationY = (3.6 * Math.PI) / 180;
 
     this.setupRaceTrackAsset();
@@ -231,7 +231,6 @@ class Game {
       this.changeRacerPosX();
     } else {
       this.raceDolly.children[0].rotation.z = 0;
-      this.raceDolly.children[2].rotation.z = 0;
       this.raceDolly.position.y = 0;
     }
   }
@@ -328,7 +327,6 @@ class Game {
       this.raceDolly.children[0].rotation.z > -0.66
     ) {
       this.raceDolly.children[0].rotation.z += this.maxRotation * this.xStick;
-      this.raceDolly.children[2].rotation.z += this.maxRotation * this.xStick;
     }
     this.raceDolly.position.y = 0;
   }
