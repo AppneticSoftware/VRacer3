@@ -231,7 +231,7 @@ class Game {
     } else {
       this.raceDolly.children[0].rotation.z = 0;
       this.raceDolly.children[1].rotation.z = 0;
-      this.raceDolly.children[2].rotation.z = 0;
+      this.raceDolly.children[2].children[2].rotation.z = 0;
       this.raceDolly.position.y = 0;
     }
   }
@@ -331,7 +331,8 @@ class Game {
     ) {
       this.raceDolly.children[0].rotation.z -= this.maxRotation * this.xStick;
       this.raceDolly.children[1].rotation.z += this.maxRotation * this.xStick;
-      this.raceDolly.children[2].rotation.z += this.maxRotation * this.xStick;
+      this.raceDolly.children[2].children[2].rotation.z +=
+        this.maxRotation * this.xStick;
     }
     this.raceDolly.position.y = 0;
   }
