@@ -36,14 +36,8 @@ class Communication {
     console.log("EXIT ");
   }
 
-  sendPositionOfOwnPlayer(pos, quad) {
-    this.socket.emit(
-      "positionOfUser",
-      this.socket.id,
-      this.roomName,
-      pos,
-      quad
-    );
+  sendPositionOfOwnPlayer(pos, rot) {
+    this.socket.emit("positionOfUser", this.socket.id, this.roomName, pos, rot);
   }
 
   //-----------------------------------------------------------------------

@@ -381,13 +381,20 @@ class Game {
     this.updateOwnPlayerPos();
     this.main.communication.sendPositionOfOwnPlayer(
       this.raceDolly.position,
-      this.raceDolly.quaternion
+      this.raceDolly.rotation
     );
   }
 
   printWarnMsg(str) {
     this.uiInstance.uiGameScreen.updateElement("errorMsg", str);
     this.uiInstance.uiGameScreen.update();
+  }
+
+  handleCollision(e) {
+    if (e.body.id != 0) {
+      this.collision = true;
+    }
+    // console.log(e);
   }
 
   //----------------------------------------------------------------
@@ -419,19 +426,13 @@ class Game {
     this.main.addObjectToScene(this.racerGroup, this.gameIdentifier);
   }
 
-  handleCollision(e) {
-    if (e.body.id != 0) {
-      this.collision = true;
-    }
-    // console.log(e);
-  }
-
-  updateOtherPlayersPosition(userID, pos, quad) {
+  updateOtherPlayersPosition(userID, pos, rot) {
     const sceneChildren = this.main.scene.children;
     for (let index = 0; index < sceneChildren.length; index++) {
       if (sceneChildren[index].name == userID) {
+        console.log(this.main.scene.children[index]);
         this.main.scene.children[index].position.set(pos.x, pos.y, pos.z);
-        // this.main.scene.children[index].quaternion.copy(quad);
+        // this.main.scene.children[index].rotation.set(rot.x, rot.y, rot.z);
         // console.log(quad);
         break;
       }
