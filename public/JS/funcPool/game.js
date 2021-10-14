@@ -205,6 +205,7 @@ class Game {
   }
 
   checkInputChange() {
+    console.log(this.raceDolly.children);
     if (this.aButton != 0) {
       //Exit game
       this.manageExitButtonPressed();
@@ -228,7 +229,8 @@ class Game {
       this.changeRacerRotationY();
       this.changeRacerPosX();
     } else {
-      this.raceDolly.rotation.z = 0;
+      this.raceDolly.children[0].rotation.z = 0;
+      this.raceDolly.children[1].rotation.z = 0;
       this.raceDolly.position.y = 0;
     }
   }
@@ -323,10 +325,11 @@ class Game {
   changeRacerRotationZ() {
     if (
       this.trigger != 0 &&
-      this.raceDolly.rotation.z < 0.66 &&
-      this.raceDolly.rotation.z > -0.66
+      this.raceDolly.children[0].rotation.z < 0.66 &&
+      this.raceDolly.children[0].rotation.z > -0.66
     ) {
-      this.raceDolly.rotation.z += this.maxRotation * this.xStick;
+      this.raceDolly.children[0].rotation.z += this.maxRotation * this.xStick;
+      this.raceDolly.children[1].rotation.z += this.maxRotation * this.xStick;
     }
     this.raceDolly.position.y = 0;
   }
