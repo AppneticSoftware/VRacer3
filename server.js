@@ -2,7 +2,11 @@
 const express = require("express");
 const path = require("path");
 const app = require("./app");
-let userIDs = [];
+let startGameVotes = [
+  ["0", "0", "0", "0"], //RoomOne
+  ["0", "0", "0", "0"], //RoomTwo
+  ["0", "0", "0", "0"], //RoomThree
+];
 let roomUserCounter = [
   ["0", "0", "0", "0"], //RoomOne
   ["0", "0", "0", "0"], //RoomTwo
@@ -38,6 +42,7 @@ function IoConnect(server) {
     listenToSuccessfullyJoinedRoom(socket);
     listenToUserExitRoom(socket);
     listenToPlayerPosUpdate(socket);
+    listenToUserVoteStart(socket);
   });
 }
 //-----------------------------------------------------------------------
@@ -70,6 +75,10 @@ function sendRoomUserDisconnect(socket, roomName) {
 
 function sendPosOfPlayer(userId, roomName, pos, quad) {
   socketIO.to(roomName).emit("updatePosOfOtherUsers", userId, pos, quad);
+}
+
+function sendStartGame(roomName) {
+  socketIO.to(roomName).emit("startGame");
 }
 
 //-----------------------------------------------------------------------
@@ -122,8 +131,59 @@ function listenToPlayerPosUpdate(socket) {
   });
 }
 
+function listenToUserVoteStart(socket) {
+  socket.on("userVoteStartGame", function (userId, roomName) {
+    addVoteToArray(roomName);
+    if (isGameReadyToStart(roomName)) {
+      sendStartGame(roomName);
+    }
+  });
+}
+
 //-----------------------------------------------------------------------
 //Generall Functions
+
+function addVoteToArray(roomName) {
+  const roomIndex = getIndexBasedOf(roomName);
+
+  for (let index = 0; index < startGameVotes[roomIndex].length; index++) {
+    if (startGameVotes[roomIndex][index] == "0") {
+      startGameVotes[roomIndex][index] = "1";
+      break;
+    }
+  }
+}
+
+function isGameReadyToStart(roomName) {
+  const roomIndex = getIndexBasedOf(roomName);
+  const startCounter = 0;
+  const playerCounter = countMembersInRoom(roomUserCounter[roomIndex]);
+  for (let index = 0; index < startGameVotes[roomIndex].length; index++) {
+    if (startGameVotes[roomIndex][index] == "1") {
+      startCounter++;
+    }
+  }
+
+  if (startCounter == playerCounter) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function getIndexBasedOf(roomName) {
+  switch (roomName) {
+    case "roomOne":
+      return 0;
+    case "roomTwo":
+      return 1;
+    case "roomThree":
+      return 2;
+
+    default:
+      return "User didnt join a room.";
+  }
+}
 
 function getRoomNameOfRoomsArrayIndex(index) {
   switch (index) {
@@ -201,6 +261,7 @@ function removeUserFromRoomAndReturnRoomName(userId) {
     for (let index2 = 0; index2 < roomUserCounter[index].length; index2++) {
       if (roomUserCounter[index][index2] == userId) {
         roomUserCounter[index][index2] = "0";
+        startGameVotes[index][index2] = "0";
         return getRoomNameOfRoomsArrayIndex(index);
       }
     }

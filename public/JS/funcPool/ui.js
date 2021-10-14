@@ -272,8 +272,8 @@ class UI {
     const content = {
       header: "Welcome to " + this.parentClass.roomName,
       rowOne: "Controlls:",
-      rowTwo: "Move forward: Trigger",
-      rowThree: "Break: Squeeze",
+      rowThree: "Move forward: Trigger",
+      // rowThree: "Break: Squeeze",
       rowFour: "Steering: Joy-Stick ",
       rowFive: "Close UI: Press Joy-Stick ",
       startMsg: "Press 'B' to start the game",

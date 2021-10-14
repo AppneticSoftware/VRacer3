@@ -40,6 +40,10 @@ class Communication {
     this.socket.emit("positionOfUser", this.socket.id, this.roomName, pos, rot);
   }
 
+  sendUserVoteStartGame() {
+    this.socket.emit("userVoteStartGame", this.socket.id, this.roomName);
+  }
+
   //-----------------------------------------------------------------------
   //Socket Functions - Listener
 
@@ -107,6 +111,12 @@ class Communication {
       if (self.socket.id != userId) {
         self.main.game.updateOtherPlayersPosition(userId, pos, quad);
       }
+    });
+  }
+
+  listenToStartGame(socket) {
+    socket.on("startGame", function () {
+      console.log("All Players are ready to start the game");
     });
   }
 

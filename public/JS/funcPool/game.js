@@ -216,6 +216,7 @@ class Game {
       //Start game
       this.exitGameBtnPressed = false;
       this.elapsedTimeExit = 0;
+      this.main.communication.sendUserVoteStartGame();
     }
     if (this.trigger != 0) {
       //Gas + vorwärts oder rückwärts
@@ -327,7 +328,7 @@ class Game {
       this.raceDolly.children[0].rotation.z < 0.66 &&
       this.raceDolly.children[0].rotation.z > -0.66
     ) {
-      this.raceDolly.children[0].rotation.z += this.maxRotation * this.xStick;
+      this.raceDolly.children[0].rotation.z -= this.maxRotation * this.xStick;
     }
     this.raceDolly.position.y = 0;
   }
