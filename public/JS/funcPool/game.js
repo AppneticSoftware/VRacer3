@@ -59,7 +59,7 @@ class Game {
 
     this.maxSpeed = 15;
     this.maxTurningSpeed = 4;
-    this.maxRotation = 0.08;
+    this.maxRotation = 0.5;
     this.maxRotationY = (3.6 * Math.PI) / 180;
 
     this.setupRaceTrackAsset();
@@ -368,7 +368,7 @@ class Game {
 
   changeRacerPosX() {
     if (this.trigger != 0 && this.isCollidingX() == false) {
-      const numb = this.maxTurningSpeed * this.xStick * -1;
+      const numb = this.maxTurningSpeed * this.xStick * -1 * this.trigger;
       this.raceDolly.translateX(numb);
     }
   }
