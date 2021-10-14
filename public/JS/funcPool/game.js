@@ -57,10 +57,10 @@ class Game {
       ],
     ];
 
-    this.maxSpeed = 20;
+    this.maxSpeed = 15;
     this.maxTurningSpeed = 4;
-    this.maxRotation = 0.66;
-    this.maxRotationY = (1.8 * Math.PI) / 180;
+    this.maxRotation = 0.8;
+    this.maxRotationY = (3.6 * Math.PI) / 180;
 
     this.setupRaceTrackAsset();
     this.createColliders();
@@ -267,8 +267,8 @@ class Game {
   }
 
   getDirectionAndMaxSpeed() {
-    if (this.yStick > 0) {
-      return -this.maxSpeed * 0.05;
+    if (this.yStick > 0.5) {
+      return -this.maxSpeed * 0.1;
     } else {
       return this.maxSpeed;
     }
@@ -336,7 +336,7 @@ class Game {
 
   isCollidingX() {
     const pos = this.raceDolly.position.clone();
-    pos.y += 18;
+    pos.y += 24;
     let dir = new THREE.Vector3();
     this.raceDolly.getWorldDirection(dir);
     if (this.isSteeringRight()) {
@@ -352,7 +352,7 @@ class Game {
     const colliders = this.colliders;
     const intersect = raycaster.intersectObjects(colliders);
     if (intersect.length > 0) {
-      if (intersect[0].distance < 15) {
+      if (intersect[0].distance < 20) {
         return true;
       } else {
         return false;
