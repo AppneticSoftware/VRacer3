@@ -323,9 +323,9 @@ class Game {
       this.raceDolly.rotation.z < 0.66 &&
       this.raceDolly.rotation.z > -0.66
     ) {
-      this.raceDolly.rotateZ(this.maxRotation * this.xStick);
-      this.raceDolly.position.y = 0;
+      this.raceDolly.rotation.z += this.maxRotation * this.xStick;
     }
+    this.raceDolly.position.y = 0;
   }
 
   changeRacerRotationY() {
