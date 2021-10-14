@@ -328,7 +328,7 @@ class Game {
       this.raceDolly.children[0].rotation.z < 0.66 &&
       this.raceDolly.children[0].rotation.z > -0.66
     ) {
-      this.raceDolly.children[0].rotation.z += this.maxRotation * this.xStick;
+      this.raceDolly.children[0].rotation.z -= this.maxRotation * this.xStick;
       this.raceDolly.children[1].rotation.z += this.maxRotation * this.xStick;
     }
     this.raceDolly.position.y = 0;
