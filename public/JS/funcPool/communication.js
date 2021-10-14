@@ -91,8 +91,8 @@ class Communication {
       if (self.socket.id != userID) {
         console.log("Add new Player to Scene: " + userID);
         self.main.game.addNewPlayerToScene(userID);
-        console.log("Player will not be added to scene: " + userID);
       } else {
+        console.log("Player will not be added to scene: " + userID);
       }
     });
   }

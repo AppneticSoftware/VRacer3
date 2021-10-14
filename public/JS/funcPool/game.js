@@ -224,8 +224,7 @@ class Game {
     }
     if (this.xStick != 0) {
       //Link bzw. Rechts
-      this.printWarnMsg("X Called");
-
+      this.changeRacerRotationZ();
       this.changeRacerRotationY();
       this.changeRacerPosX();
     }
@@ -239,7 +238,7 @@ class Game {
     }
     this.uiVisible = true;
     this.elapsedTimeUI += dt;
-    if (this.elapsedTimeUI > 0.9) {
+    if (this.elapsedTimeUI > 1.2) {
       this.uiVisible = !this.uiVisible;
       this.elapsedTimeUI = 0;
     }
