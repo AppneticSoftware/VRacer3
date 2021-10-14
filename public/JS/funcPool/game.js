@@ -12,7 +12,7 @@ class Game {
     this.clock = new THREE.Clock();
     this.collision = false;
     this.assetArray = [
-      ["blueBike.glb", [-41, 0, -300], [550, 550, 550]],
+      ["blueBike.glb", [-41, 1000, -300], [550, 550, 550]],
       ["greenBike.glb", [-19, 0, -300], [550, 550, 550]],
       ["redBike.glb", [5, 0, -300], [550, 550, 550]],
       ["yellowBike.glb", [27, 0, -300], [550, 550, 550]],
@@ -47,12 +47,12 @@ class Game {
       [
         //mitte-unten
         [-60, 0, -75],
-        [1, 50, 1000],
+        [5, 50, 1000],
       ],
 
       [
         //mitte-unten-rechts
-        [-330, 0, -640],
+        [-330, 0, -630],
         [320, 50, 400],
       ],
     ];
@@ -91,7 +91,7 @@ class Game {
       this.uiInstance = new UI(this);
       this.uiInstance.setupGameUI();
       this.gameUIDolly = new THREE.Object3D();
-      this.gameUIDolly.add(this.uiInstance.uiGameScreen.mesh);
+      //this.gameUIDolly.add(this.uiInstance.uiGameScreen.mesh);
       this.gameUIDolly.position.set(0, 14.5, 2);
     }
   }
@@ -102,7 +102,7 @@ class Game {
   addBoarder(pos = [3], size = [3]) {
     const geometry = new THREE.BoxGeometry(size[0], size[1], size[2]);
     const material = new THREE.MeshBasicMaterial({
-      visible: false,
+      visible: true,
     });
 
     const box = new THREE.Mesh(geometry, material);
@@ -421,12 +421,12 @@ class Game {
     this.raceDolly = new THREE.Object3D();
     this.setupCamera();
     this.setupGameUI();
-    this.loadGLTF_ToOtherObject(
-      this.assetArray[index][0],
-      this.assetArray[index][2],
-      socketId,
-      this.raceDolly
-    );
+    // this.loadGLTF_ToOtherObject(
+    //   this.assetArray[index][0],
+    //   this.assetArray[index][2],
+    //   socketId,
+    //   this.raceDolly
+    // );
     const posBike = this.getPosVectorOfArray(this.assetArray[index][1]);
     this.raceDolly.position.x = posBike.x;
     this.raceDolly.position.y = posBike.y;
