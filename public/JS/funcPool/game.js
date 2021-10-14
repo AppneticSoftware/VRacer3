@@ -227,6 +227,9 @@ class Game {
       this.changeRacerRotationZ();
       this.changeRacerRotationY();
       this.changeRacerPosX();
+    } else {
+      this.raceDolly.rotation.z = 0;
+      this.raceDolly.position.y = 0;
     }
   }
 
