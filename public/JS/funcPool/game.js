@@ -102,7 +102,7 @@ class Game {
   addBoarder(pos = [3], size = [3]) {
     const geometry = new THREE.BoxGeometry(size[0], size[1], size[2]);
     const material = new THREE.MeshBasicMaterial({
-      visible: true,
+      visible: false,
     });
 
     const box = new THREE.Mesh(geometry, material);
@@ -266,11 +266,11 @@ class Game {
     }
   }
 
-  getDrivingDirection() {
+  getDirectionAndMaxSpeed() {
     if (this.yStick > 0) {
-      return -1;
+      return -this.maxSpeed * 0.05;
     } else {
-      return 1;
+      return this.maxSpeed;
     }
   }
 
@@ -297,7 +297,7 @@ class Game {
     pos.y += 18;
     let dir = new THREE.Vector3();
     this.raceDolly.getWorldDirection(dir);
-    if (this.getDrivingDirection() < 0) dir.negate();
+    if (this.getDirectionAndMaxSpeed() < 0) dir.negate();
     let raycaster = new THREE.Raycaster(pos, dir);
     const colliders = this.colliders;
     if (colliders !== undefined) {
@@ -314,9 +314,7 @@ class Game {
 
   changeRacerPosZ() {
     if (this.isCollidingZ() == false) {
-      this.raceDolly.translateZ(
-        this.maxSpeed * this.trigger * this.getDrivingDirection()
-      );
+      this.raceDolly.translateZ(this.trigger * this.getDirectionAndMaxSpeed());
     }
   }
 
@@ -337,7 +335,6 @@ class Game {
   }
 
   isCollidingX() {
-    this.printWarnMsg("ENTER ISCOLLIDING");
     const pos = this.raceDolly.position.clone();
     pos.y += 18;
     let dir = new THREE.Vector3();
@@ -347,7 +344,6 @@ class Game {
     } else {
       dir.set(-1, 0, 0);
     }
-    this.printWarnMsg("Middle ISCOLLIDING");
 
     dir.applyMatrix4(this.raceDolly.matrix);
     dir.normalize();
@@ -357,20 +353,14 @@ class Game {
     const intersect = raycaster.intersectObjects(colliders);
     if (intersect.length > 0) {
       if (intersect[0].distance < 15) {
-        this.printWarnMsg("true ISCOLLIDING");
-
         return true;
       } else {
-        this.printWarnMsg("false ISCOLLIDING");
-
         return false;
       }
     }
   }
 
   changeRacerPosX() {
-    this.printWarnMsg("changeRacerPosX");
-
     if (this.trigger != 0 && this.isCollidingX() == false) {
       const numb = this.maxTurningSpeed * this.xStick * -1;
       this.raceDolly.translateX(numb);
