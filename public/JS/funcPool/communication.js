@@ -120,6 +120,7 @@ class Communication {
 
   listenToStartGame(socket) {
     const self = this;
+    this.main.game.printWarnMsg("GameWillstart");
     socket.on("startGame", function () {
       self.main.game.startGame();
     });
