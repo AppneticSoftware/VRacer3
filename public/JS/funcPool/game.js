@@ -229,6 +229,7 @@ class Game {
     }
     if (this.bButton != 0) {
       //Start game
+      this.printWarnMsg("B PRESSED");
       this.exitGameBtnPressed = false;
       this.elapsedTimeExit = 0;
       this.main.communication.sendUserVoteStartGame();
