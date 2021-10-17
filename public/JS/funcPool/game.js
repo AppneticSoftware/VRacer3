@@ -242,7 +242,7 @@ class Game {
     }
     if (this.xStick != 0) {
       //Link bzw. Rechts
-      this.changeRacerRotationZ();
+      // this.changeRacerRotationZ();
       this.changeRacerRotationY();
       this.changeRacerPosX();
     } else {
@@ -348,8 +348,8 @@ class Game {
   }
 
   handleRoundCounting() {
-    if (this.isCollidingWithRoundsCounter()) {
-      const dt = this.roundsClock.getDelta();
+    const dt = this.roundsClock.getDelta();
+    if (this.isCollidingWithRoundsCounter() && dt > 12.0) {
       this.printWarnMsg(String(dt));
     }
   }
