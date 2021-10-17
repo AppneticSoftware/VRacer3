@@ -57,7 +57,7 @@ class Game {
       ],
     ];
 
-    this.uiVisible = false;
+    this.uiVisible = true;
 
     this.maxSpeed = 15;
     this.maxTurningSpeed = 4;
@@ -119,6 +119,18 @@ class Game {
     for (let index = 0; index < this.boarderArray.length; index++) {
       this.addBoarder(this.boarderArray[index][0], this.boarderArray[index][1]);
     }
+    this.addRoundsCountingCollider();
+  }
+
+  addRoundsCountingCollider() {
+    const geometry = new THREE.BoxGeometry(200, 50, 5);
+    const material = new THREE.MeshBasicMaterial({
+      visible: true,
+    });
+
+    this.roundCounter = new THREE.Mesh(geometry, material);
+    this.roundCounter.position.set(19, 0, -200);
+    this.main.addObjectToScene(this.roundCounter, this.gameIdentifier);
   }
 
   addCameraToDolly() {
@@ -203,6 +215,7 @@ class Game {
 
   handleUpdatedValuesOfInput() {
     if (this.raceDolly) {
+      this.handleRoundCounting();
       this.checkInputChange();
     }
   }
@@ -316,6 +329,29 @@ class Game {
     }
   }
 
+  isCollidingWithRoundsCounter() {
+    const pos = this.raceDolly.position.clone();
+    pos.y += 2;
+    let dir = new THREE.Vector3();
+    this.raceDolly.getWorldDirection(dir);
+    let raycaster = new THREE.Raycaster(pos, dir);
+    const intersect = raycaster.intersectObjects([this.roundCounter]);
+    if (intersect.length > 0) {
+      console.log(intersect[0].distance);
+      if (intersect[0].distance < 15) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+
+  handleRoundCounting() {
+    if (this.isCollidingWithRoundsCounter()) {
+      const dt = this.clock.getDelta();
+      this.printWarnMsg(dt);
+    }
+  }
   changeRacerPosZ() {
     if (this.isCollidingZ() == false) {
       this.raceDolly.translateZ(this.trigger * this.getDirectionAndMaxSpeed());
@@ -389,13 +425,6 @@ class Game {
   printWarnMsg(str) {
     this.uiInstance.uiGameScreen.updateElement("errorMsg", str);
     this.uiInstance.uiGameScreen.update();
-  }
-
-  handleCollision(e) {
-    if (e.body.id != 0) {
-      this.collision = true;
-    }
-    // console.log(e);
   }
 
   //----------------------------------------------------------------

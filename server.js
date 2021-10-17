@@ -134,7 +134,7 @@ function listenToPlayerPosUpdate(socket) {
 function listenToUserVoteStart(socket) {
   socket.on("userVoteStartGame", function (userId, roomName) {
     addVoteToArray(roomName);
-    if (isGameReadyToStart(roomName)) {
+    if (isRoomReadyToStart(roomName)) {
       sendStartGame(roomName);
     }
   });
@@ -154,7 +154,7 @@ function addVoteToArray(roomName) {
   }
 }
 
-function isGameReadyToStart(roomName) {
+function isRoomReadyToStart(roomName) {
   const roomIndex = getIndexBasedOf(roomName);
   const startCounter = 0;
   const playerCounter = countMembersInRoom(roomUserCounter[roomIndex]);
