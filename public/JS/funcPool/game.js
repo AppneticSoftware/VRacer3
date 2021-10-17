@@ -237,6 +237,7 @@ class Game {
       this.changeRacerPosZ();
     }
     if (this.stickButton != 0) {
+      //WEBXR SECOND TEST BTN
       //Show UI;
       this.manageUI_Visibility();
     }
@@ -246,8 +247,8 @@ class Game {
       this.changeRacerRotationY();
       this.changeRacerPosX();
     } else {
-      this.raceDolly.children[0].rotation.z = 0;
-      this.raceDolly.position.y = 0;
+      // this.raceDolly.children[0].rotation.z = 0;
+      // this.raceDolly.position.y = 0;
     }
   }
 
@@ -338,7 +339,6 @@ class Game {
     let raycaster = new THREE.Raycaster(pos, dir);
     const intersect = raycaster.intersectObjects([this.roundCounter]);
     if (intersect.length > 0) {
-      console.log(intersect[0].distance);
       if (intersect[0].distance < 15) {
         return true;
       } else {
@@ -350,11 +350,13 @@ class Game {
   handleRoundCounting() {
     if (this.isCollidingWithRoundsCounter()) {
       const dt = this.roundsClock.getDelta();
-      if (dt > 12.0) {
+      if (dt > 7.0) {
+        //Todo: zählen und wenn gröer als 7 runden, dann an server finish schicken
         this.printWarnMsg(String(dt));
       }
     }
   }
+
   changeRacerPosZ() {
     if (this.isCollidingZ() == false) {
       this.raceDolly.translateZ(this.trigger * this.getDirectionAndMaxSpeed());
@@ -412,7 +414,7 @@ class Game {
   }
 
   changeVisibilityOfUI(bool) {
-    this.uiInstance.uiGameScreen.visible = bool;
+    this.uiInstance.set_UI_Visible(bool, false);
   }
 
   updateGamePos() {
@@ -459,6 +461,50 @@ class Game {
     this.main.addObjectToScene(this.racerGroup, this.gameIdentifier);
   }
 
+  resetPosOfPlayersToStartGame() {
+    this.restPosOfOtherPlayers();
+    this.resetPosOfOwnPlayer();
+  }
+
+  startGame() {
+    this.resetPosOfPlayersToStartGame();
+    this.uiInstance.setupGameStartUI();
+    this.countDown();
+  }
+
+  countDown() {
+    let timeleft = 5;
+    const self = this;
+    const downloadTimer = setInterval(function () {
+      if (timeleft <= 0) {
+        clearInterval(downloadTimer);
+        self.uiInstance.set_UI_Visible(false, false);
+      }
+      self.uiInstance.updateCounter(String(timeleft));
+      timeleft -= 1;
+    }, 1000);
+  }
+
+  restPosOfOtherPlayers() {
+    const sceneChildren = this.main.scene.children;
+    for (let index = 0; index < this.roomUserData.length; index++) {
+      for (let index2 = 0; index2 < sceneChildren.length; index2++) {
+        if (sceneChildren[index2].name == this.roomUserData[index]) {
+          const pos = this.assetArray[index][1];
+          this.main.scene.children[index].position.set(pos[0], pos[1], pos[2]);
+          this.main.scene.children[index].rotation.set(0, 0, 0);
+          break;
+        }
+      }
+    }
+  }
+
+  resetPosOfOwnPlayer() {
+    const pos = this.assetArray[this.raceDolly.userData.assetIndex][1];
+    this.raceDolly.position.set(pos[0], pos[1], pos[2]);
+    this.raceDolly.rotation.set(0, 0, 0);
+  }
+
   updateOtherPlayersPosition(userID, pos, rot) {
     const sceneChildren = this.main.scene.children;
     for (let index = 0; index < sceneChildren.length; index++) {
@@ -483,6 +529,7 @@ class Game {
       this.raceDolly
     );
     const posBike = this.getPosVectorOfArray(this.assetArray[index][1]);
+    this.raceDolly.userData.assetIndex = index;
     this.raceDolly.position.x = posBike.x;
     this.raceDolly.position.y = posBike.y;
     this.raceDolly.position.z = posBike.z;

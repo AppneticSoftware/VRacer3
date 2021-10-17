@@ -272,8 +272,8 @@ class UI {
     const content = {
       header: "Welcome to " + this.parentClass.roomName,
       rowOne: "Controlls:",
+      rowTwo: "",
       rowThree: "Move forward: Trigger",
-      // rowThree: "Break: Squeeze",
       rowFour: "Steering: Joy-Stick ",
       rowFive: "Close UI: Press Joy-Stick ",
       startMsg: "Press 'B' to start the game",
@@ -286,6 +286,35 @@ class UI {
     ui.mesh.rotation.y = -(180 * Math.PI) / 180;
     ui.mesh.rotation.x = -(5 * Math.PI) / 180;
     this.uiGameScreen = ui;
+  }
+
+  updateCounter(str) {
+    this.uiGameScreen.updateElement("rowFour", str);
+    this.uiGameScreen.update();
+  }
+
+  setupGameStartUI() {
+    this.uiGameScreen.updateElement("header", "");
+    this.uiGameScreen.updateElement("rowOne", "");
+    this.uiGameScreen.updateElement("rowTwo", "Game will start in: ");
+    this.uiGameScreen.updateElement("rowThree", "");
+    this.uiGameScreen.updateElement("rowFour", "");
+    this.uiGameScreen.updateElement("rowFive", "");
+    this.uiGameScreen.updateElement("startMsg", "");
+    this.uiGameScreen.updateElement("errorMsg", "UI will close automatically.");
+    this.set_UI_Visible(true, false);
+  }
+
+  showWinner() {
+    this.uiGameScreen.updateElement("header", "Game Over");
+    this.uiGameScreen.updateElement("rowOne", "");
+    this.uiGameScreen.updateElement("rowTwo", "The Winner is");
+    this.uiGameScreen.updateElement("rowThree", "");
+    this.uiGameScreen.updateElement("rowFour", "");
+    this.uiGameScreen.updateElement("rowFive", "");
+    this.uiGameScreen.updateElement("startMsg", "");
+    this.uiGameScreen.updateElement("errorMsg", "");
+    this.set_UI_Visible(true, false);
   }
 }
 export { UI };

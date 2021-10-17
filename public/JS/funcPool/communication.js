@@ -116,7 +116,7 @@ class Communication {
 
   listenToStartGame(socket) {
     socket.on("startGame", function () {
-      console.log("All Players are ready to start the game");
+      this.main.game.startGame();
     });
   }
 
