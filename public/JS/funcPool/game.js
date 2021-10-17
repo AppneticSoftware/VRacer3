@@ -10,6 +10,7 @@ class Game {
     this.roomName = roomName;
     this.gameActive = true;
     this.clock = new THREE.Clock();
+    this.roundsClock = new THREE.Clock();
     this.collision = false;
     this.assetArray = [
       ["blueBike.glb", [-41, 0, -300], [550, 550, 550]],
@@ -348,8 +349,8 @@ class Game {
 
   handleRoundCounting() {
     if (this.isCollidingWithRoundsCounter()) {
-      const dt = this.clock.getDelta();
-      this.printWarnMsg(dt);
+      const dt = this.roundsClock.getDelta();
+      this.printWarnMsg(String(dt));
     }
   }
   changeRacerPosZ() {
