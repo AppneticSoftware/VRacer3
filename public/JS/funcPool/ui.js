@@ -305,15 +305,18 @@ class UI {
     this.set_UI_Visible(true, false);
   }
 
-  showWinner() {
+  showWinnerUI(nameOfWinner) {
     this.uiGameScreen.updateElement("header", "Game Over");
     this.uiGameScreen.updateElement("rowOne", "");
     this.uiGameScreen.updateElement("rowTwo", "The Winner is");
     this.uiGameScreen.updateElement("rowThree", "");
-    this.uiGameScreen.updateElement("rowFour", "");
+    this.uiGameScreen.updateElement("rowFour", "nameOfWinner");
     this.uiGameScreen.updateElement("rowFive", "");
-    this.uiGameScreen.updateElement("startMsg", "");
-    this.uiGameScreen.updateElement("errorMsg", "");
+    this.uiGameScreen.updateElement(
+      "startMsg",
+      "Press 'B' to start the game again."
+    );
+    this.uiGameScreen.updateElement("errorMsg", "Press 'A' to exit the game");
     this.set_UI_Visible(true, false);
   }
 }

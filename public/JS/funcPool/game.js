@@ -59,6 +59,7 @@ class Game {
     ];
 
     this.uiVisible = true;
+    this.roundsToWinGame = 1;
 
     this.maxSpeed = 15;
     this.maxTurningSpeed = 4;
@@ -129,9 +130,9 @@ class Game {
       visible: true,
     });
 
-    this.roundCounter = new THREE.Mesh(geometry, material);
-    this.roundCounter.position.set(19, 0, -200);
-    this.main.addObjectToScene(this.roundCounter, this.gameIdentifier);
+    this.finishLine = new THREE.Mesh(geometry, material);
+    this.finishLine.position.set(19, 0, -200);
+    this.main.addObjectToScene(this.finishLine, this.gameIdentifier);
   }
 
   addCameraToDolly() {
@@ -238,6 +239,7 @@ class Game {
     }
     if (this.stickButton != 0) {
       //WEBXR SECOND TEST BTN
+      this.main.communication.sendUserVoteStartGame();
       //Show UI;
       this.manageUI_Visibility();
     }
@@ -337,7 +339,7 @@ class Game {
     let dir = new THREE.Vector3();
     this.raceDolly.getWorldDirection(dir);
     let raycaster = new THREE.Raycaster(pos, dir);
-    const intersect = raycaster.intersectObjects([this.roundCounter]);
+    const intersect = raycaster.intersectObjects([this.finishLine]);
     if (intersect.length > 0) {
       if (intersect[0].distance < 15) {
         return true;
@@ -351,9 +353,15 @@ class Game {
     if (this.isCollidingWithRoundsCounter()) {
       const dt = this.roundsClock.getDelta();
       if (dt > 7.0) {
-        //Todo: zählen und wenn gröer als 7 runden, dann an server finish schicken
-        this.printWarnMsg(String(dt));
+        this.roundCounter++;
+        this.checkFinishGame();
       }
+    }
+  }
+
+  checkFinishGame() {
+    if (this.roundCounter == this.roundsToWinGame) {
+      this.main.communication.sendUserUserFinishedAllRounds();
     }
   }
 
@@ -467,9 +475,16 @@ class Game {
   }
 
   startGame() {
+    this.roundCounter = 0;
     this.resetPosOfPlayersToStartGame();
     this.uiInstance.setupGameStartUI();
     this.countDown();
+  }
+
+  endGame(userId) {
+    this.roundCounter = 0;
+    const nameOfWinner = userId;
+    this.uiInstance.showWinnerUI(nameOfWinner);
   }
 
   countDown() {
@@ -479,6 +494,7 @@ class Game {
       if (timeleft <= 0) {
         clearInterval(downloadTimer);
         self.uiInstance.set_UI_Visible(false, false);
+        self.roundsClock.getDelta();
       }
       self.uiInstance.updateCounter(String(timeleft));
       timeleft -= 1;
@@ -509,7 +525,6 @@ class Game {
     const sceneChildren = this.main.scene.children;
     for (let index = 0; index < sceneChildren.length; index++) {
       if (sceneChildren[index].name == userID) {
-        console.log(this.main.scene.children[index]);
         this.main.scene.children[index].position.set(pos.x, pos.y, pos.z);
         // this.main.scene.children[index].rotation.set(rot.x, rot.y, rot.z);
         // console.log(quad);

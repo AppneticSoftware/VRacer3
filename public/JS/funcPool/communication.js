@@ -14,7 +14,7 @@ class Communication {
     this.listenToUserDisconnect(this.socket);
     this.listenToNewPlayerJoined(this.socket);
     this.listenToUpdateOfPlayerPos(this.socket);
-
+    this.listenToStartGame(this.socket);
     this.listenToTest(this.socket);
   }
 
@@ -42,6 +42,10 @@ class Communication {
 
   sendUserVoteStartGame() {
     this.socket.emit("userVoteStartGame", this.socket.id, this.roomName);
+  }
+
+  sendUserUserFinishedAllRounds() {
+    this.socket.emit("userFinishedAllRounds", this.socket.id, this.roomName);
   }
 
   //-----------------------------------------------------------------------
@@ -115,8 +119,16 @@ class Communication {
   }
 
   listenToStartGame(socket) {
+    const self = this;
     socket.on("startGame", function () {
-      this.main.game.startGame();
+      self.main.game.startGame();
+    });
+  }
+
+  listenToFinishGame(socket) {
+    const self = this;
+    socket.on("gameFinish", function (userId) {
+      self.main.game.endGame(userId);
     });
   }
 
