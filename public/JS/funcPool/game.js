@@ -348,9 +348,11 @@ class Game {
   }
 
   handleRoundCounting() {
-    const dt = this.roundsClock.getDelta();
-    if (this.isCollidingWithRoundsCounter() && dt > 12.0) {
-      this.printWarnMsg(String(dt));
+    if (this.isCollidingWithRoundsCounter()) {
+      const dt = this.roundsClock.getDelta();
+      if (dt > 12.0) {
+        this.printWarnMsg(String(dt));
+      }
     }
   }
   changeRacerPosZ() {
