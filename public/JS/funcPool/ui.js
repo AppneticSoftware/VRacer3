@@ -318,5 +318,21 @@ class UI {
     this.set_UI_Visible(true, false);
     this.uiGameScreen.update();
   }
+
+  resetGameStartUI() {
+    this.uiGameScreen.updateElement(
+      "header",
+      "Welcome to " + this.parentClass.roomName
+    );
+    this.uiGameScreen.updateElement("rowOne", "Controlls:");
+    this.uiGameScreen.updateElement("rowTwo", "");
+    this.uiGameScreen.updateElement("rowThree", "Move forward: Trigger");
+    this.uiGameScreen.updateElement("rowFour", "Steering: Joy-Stick ");
+    this.uiGameScreen.updateElement("rowFive", "Close UI: Press Joy-Stick ");
+    this.uiGameScreen.updateElement("startMsg", "Press 'B' to start the game");
+    this.uiGameScreen.updateElement("errorMsg", "");
+    this.set_UI_Visible(true, false);
+    this.uiGameScreen.update();
+  }
 }
 export { UI };

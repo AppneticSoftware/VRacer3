@@ -60,6 +60,7 @@ class Game {
 
     this.uiVisible = true;
     this.roundsToWinGame = 3;
+    this.allowToPlay = true;
 
     this.maxSpeed = 15;
     this.maxTurningSpeed = 4;
@@ -98,6 +99,8 @@ class Game {
       this.gameUIDolly.add(this.uiInstance.uiGameScreen.mesh);
       this.changeVisibilityOfUI(this.uiVisible);
       this.gameUIDolly.position.set(0, 14.5, 2);
+    } else {
+      this.uiInstance.resetGameStartUI();
     }
   }
 
@@ -234,17 +237,18 @@ class Game {
       this.elapsedTimeExit = 0;
       this.main.communication.sendUserVoteStartGame();
     }
-    if (this.trigger != 0) {
-      //Gas + vorwärts oder rückwärts
-      this.changeRacerPosZ();
-    }
     if (this.stickButton != 0) {
       //WEBXR SECOND TEST BTN
       // this.main.communication.sendUserVoteStartGame();
       //Show UI;
       this.manageUI_Visibility();
     }
-    if (this.xStick != 0) {
+    if (this.trigger != 0 && this.allowToPlay == true) {
+      //Gas + vorwärts oder rückwärts
+      this.changeRacerPosZ();
+    }
+
+    if (this.xStick != 0 && this.allowToPlay == true) {
       //Link bzw. Rechts
       // this.changeRacerRotationZ();
       this.changeRacerRotationY();
@@ -465,6 +469,7 @@ class Game {
         clearInterval(downloadTimer);
         self.uiInstance.set_UI_Visible(false, false);
         self.roundsClock.getDelta();
+        self.allowToPlay = true;
       }
       self.uiInstance.updateCounter(String(timeleft));
       timeleft -= 1;
@@ -515,6 +520,7 @@ class Game {
   }
 
   resetPosOfPlayersToStartGame() {
+    this.allowToPlay = false;
     this.restPosOfOtherPlayers();
     this.resetPosOfOwnPlayer();
   }
