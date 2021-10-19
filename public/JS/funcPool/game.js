@@ -240,6 +240,8 @@ class Game {
     if (this.stickButton != 0) {
       //WEBXR SECOND TEST BTN
       // this.main.communication.sendUserVoteStartGame();
+      this.manageExitButtonPressed();
+
       //Show UI;
       this.manageUI_Visibility();
     }
