@@ -123,7 +123,6 @@ class Communication {
     const self = this;
     socket.on("startGame", function () {
       self.main.game.startGame();
-      self.sendUserUserFinishedAllRounds();
     });
   }
 

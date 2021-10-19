@@ -59,7 +59,7 @@ class Game {
     ];
 
     this.uiVisible = true;
-    this.roundsToWinGame = 1;
+    this.roundsToWinGame = 3;
 
     this.maxSpeed = 15;
     this.maxTurningSpeed = 4;
