@@ -352,7 +352,7 @@ class Game {
   handleRoundCounting() {
     if (this.isCollidingWithRoundsCounter()) {
       const dt = this.roundsClock.getDelta();
-      if (dt > 7.0) {
+      if (dt > 7.0 && this.gameStarted) {
         this.roundCounter++;
         this.checkFinishGame();
       }
@@ -472,6 +472,7 @@ class Game {
 
   startGame() {
     this.roundCounter = 0;
+    this.gameStarted = true;
     this.resetPosOfPlayersToStartGame();
     this.uiInstance.setupGameStartUI();
     this.countDown();
@@ -479,6 +480,7 @@ class Game {
 
   endGame(userId) {
     this.roundCounter = 0;
+    this.gameStarted = false;
     this.uiInstance.showWinnerUI(this.findBikeOfUserId(userId));
   }
 
