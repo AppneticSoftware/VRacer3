@@ -127,7 +127,7 @@ class Game {
   addRoundsCountingCollider() {
     const geometry = new THREE.BoxGeometry(200, 50, 5);
     const material = new THREE.MeshBasicMaterial({
-      visible: true,
+      visible: false,
     });
 
     this.finishLine = new THREE.Mesh(geometry, material);
@@ -229,7 +229,7 @@ class Game {
     }
     if (this.bButton != 0) {
       //Start game
-      this.printWarnMsg("B PRESSED");
+      // this.printWarnMsg("B PRESSED");
       this.exitGameBtnPressed = false;
       this.elapsedTimeExit = 0;
       this.main.communication.sendUserVoteStartGame();
@@ -240,7 +240,6 @@ class Game {
     }
     if (this.stickButton != 0) {
       //WEBXR SECOND TEST BTN
-      this.main.communication.sendUserVoteStartGame();
       //Show UI;
       this.manageUI_Visibility();
     }
@@ -441,6 +440,48 @@ class Game {
     this.uiInstance.uiGameScreen.update();
   }
 
+  getBikeColorBasedOnIndex(index) {
+    switch (index) {
+      case 0:
+        return "Blue Bike";
+      case 1:
+        return "Green Bike";
+      case 2:
+        return "Red Bike";
+      case 3:
+        return "Yellow Bike";
+
+      default:
+        return "error Bike";
+    }
+  }
+
+  countDown() {
+    let timeleft = 5;
+    const self = this;
+    const downloadTimer = setInterval(function () {
+      if (timeleft <= 0) {
+        clearInterval(downloadTimer);
+        self.uiInstance.set_UI_Visible(false, false);
+        self.roundsClock.getDelta();
+      }
+      //self.uiInstance.updateCounter(String(timeleft));
+      timeleft -= 1;
+    }, 1000);
+  }
+
+  startGame() {
+    this.roundCounter = 0;
+    this.resetPosOfPlayersToStartGame();
+    this.uiInstance.setupGameStartUI();
+    this.countDown();
+  }
+
+  endGame(userId) {
+    this.roundCounter = 0;
+    this.uiInstance.showWinnerUI(this.findBikeOfUserId(userId));
+  }
+
   //----------------------------------------------------------------
   //Player Functions
 
@@ -475,31 +516,12 @@ class Game {
     this.resetPosOfOwnPlayer();
   }
 
-  startGame() {
-    this.roundCounter = 0;
-    this.resetPosOfPlayersToStartGame();
-    this.uiInstance.setupGameStartUI();
-    this.countDown();
-  }
-
-  endGame(userId) {
-    this.roundCounter = 0;
-    const nameOfWinner = userId;
-    this.uiInstance.showWinnerUI(nameOfWinner);
-  }
-
-  countDown() {
-    let timeleft = 5;
-    const self = this;
-    const downloadTimer = setInterval(function () {
-      if (timeleft <= 0) {
-        clearInterval(downloadTimer);
-        self.uiInstance.set_UI_Visible(false, false);
-        self.roundsClock.getDelta();
+  findBikeOfUserId(userID) {
+    for (let index = 0; index < this.roomUserData.length; index++) {
+      if (this.roomUserData[index] == userID) {
+        return this.getBikeColorBasedOnIndex(index);
       }
-      self.uiInstance.updateCounter(String(timeleft));
-      timeleft -= 1;
-    }, 1000);
+    }
   }
 
   restPosOfOtherPlayers() {
@@ -527,8 +549,7 @@ class Game {
     for (let index = 0; index < sceneChildren.length; index++) {
       if (sceneChildren[index].name == userID) {
         this.main.scene.children[index].position.set(pos.x, pos.y, pos.z);
-        // this.main.scene.children[index].rotation.set(rot.x, rot.y, rot.z);
-        // console.log(quad);
+        this.main.scene.children[index].rotation.set(rot._x, rot._y, rot._z);
         break;
       }
     }

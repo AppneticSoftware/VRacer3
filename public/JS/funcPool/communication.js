@@ -15,6 +15,7 @@ class Communication {
     this.listenToNewPlayerJoined(this.socket);
     this.listenToUpdateOfPlayerPos(this.socket);
     this.listenToStartGame(this.socket);
+    this.listenToFinishGame(this.socket);
     this.listenToTest(this.socket);
   }
 
@@ -120,9 +121,9 @@ class Communication {
 
   listenToStartGame(socket) {
     const self = this;
-    this.main.game.printWarnMsg("GameWillstart");
     socket.on("startGame", function () {
       self.main.game.startGame();
+      self.sendUserUserFinishedAllRounds();
     });
   }
 

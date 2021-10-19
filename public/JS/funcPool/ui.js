@@ -197,13 +197,13 @@ class UI {
       header: {
         type: "text",
         position: { top: 0 },
-        paddingTop: 30,
+        padding: 30,
         height: 70,
         textAlign: "center",
       },
       rowOne: {
         type: "text",
-        position: { top: 70, left: 20 },
+        position: { top: 70 },
         height: 40,
         padding: 18,
         fontSize: 20,
@@ -211,7 +211,7 @@ class UI {
       },
       rowTwo: {
         type: "text",
-        position: { top: 120, left: 20 },
+        position: { top: 120 },
         height: 40,
         padding: 18,
         fontSize: 20,
@@ -219,7 +219,7 @@ class UI {
       },
       rowThree: {
         type: "text",
-        position: { top: 170, left: 20 },
+        position: { top: 170 },
         height: 40,
         padding: 18,
         fontSize: 20,
@@ -227,7 +227,7 @@ class UI {
       },
       rowFour: {
         type: "text",
-        position: { top: 220, left: 20 },
+        position: { top: 220 },
         height: 40,
         padding: 18,
         fontSize: 20,
@@ -235,7 +235,7 @@ class UI {
       },
       rowFive: {
         type: "text",
-        position: { top: 270, left: 20 },
+        position: { top: 270 },
         height: 40,
         padding: 18,
         fontSize: 20,
@@ -303,21 +303,20 @@ class UI {
     this.uiGameScreen.updateElement("startMsg", "");
     this.uiGameScreen.updateElement("errorMsg", "UI will close automatically.");
     this.set_UI_Visible(true, false);
+    this.uiGameScreen.update();
   }
 
   showWinnerUI(nameOfWinner) {
     this.uiGameScreen.updateElement("header", "Game Over");
     this.uiGameScreen.updateElement("rowOne", "");
     this.uiGameScreen.updateElement("rowTwo", "The Winner is");
-    this.uiGameScreen.updateElement("rowThree", "");
-    this.uiGameScreen.updateElement("rowFour", "nameOfWinner");
+    this.uiGameScreen.updateElement("rowThree", nameOfWinner);
+    this.uiGameScreen.updateElement("rowFour", "");
     this.uiGameScreen.updateElement("rowFive", "");
-    this.uiGameScreen.updateElement(
-      "startMsg",
-      "Press 'B' to start the game again."
-    );
-    this.uiGameScreen.updateElement("errorMsg", "Press 'A' to exit the game");
+    this.uiGameScreen.updateElement("startMsg", "Press 'A' to exit the game.");
+    this.uiGameScreen.updateElement("errorMsg", "");
     this.set_UI_Visible(true, false);
+    this.uiGameScreen.update();
   }
 }
 export { UI };
