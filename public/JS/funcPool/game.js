@@ -465,7 +465,7 @@ class Game {
         self.uiInstance.set_UI_Visible(false, false);
         self.roundsClock.getDelta();
       }
-      //self.uiInstance.updateCounter(String(timeleft));
+      self.uiInstance.updateCounter(String(timeleft));
       timeleft -= 1;
     }, 1000);
   }
